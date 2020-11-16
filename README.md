@@ -39,7 +39,7 @@ Make sure following depencies are installed correctly
 - pillow ```pip install pillow```
 
 ### Running
-Run main.py by typing **after navigating into the directory where main is present. **
+Run main.py by typing **after navigating into the directory where main is present** into the cmd.
 ```
 python main.py
 ```
