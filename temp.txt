@@ -1,0 +1,70 @@
+
+    # def determineLanes(self):
+    #     pass
+        # left_lane_objects = []
+        # right_lane_objects = []
+        # if self.det_lanes_frame_count <= 5:
+        #     self.det_lanes_frame_count += 1
+        #     for track in self.object.tracker.tracker.tracks:
+        #         if not track.is_confirmed() or track.time_since_update > 1:
+        #             continue
+        #         bbox = track.to_tlbr()
+        #         t_o_id = track.track_id
+        #         width = abs(bbox[2]-bbox[0])
+        #         height = abs(bbox[3]-bbox[1])
+        #         centroid_x = min(bbox[2], bbox[0])+(width/2)
+        #         centroid_y = min(bbox[3], bbox[1])+(height/2)
+        #         centroid = [centroid_x, centroid_y]
+        #
+        #         area = width * height
+        #
+        #         if len(self.tracked_objects) == 0:
+        #             self.tracked_objects.append({
+        #                 'id': t_o_id,
+        #                 'bboxes': [bbox],
+        #                 'areas': [area],
+        #                 'centroids': [centroid],
+        #             })
+        #         else:
+        #             found = False
+        #             for index in range(len(self.tracked_objects)):
+        #                 track_object = self.tracked_objects[index]
+        #                 if track_object['id'] == t_o_id:
+        #                     track_object['bboxes'] = np.append(track_object['bboxes'], [bbox], axis=0)
+        #                     track_object['areas'] = np.append(track_object['areas'], [area], axis=0)
+        #                     track_object['centroids'] = np.append(track_object['centroids'], [centroid], axis=0)
+        #                     found = True
+        #                 else:
+        #                     continue
+        #             if not found:
+        #                 self.tracked_objects.append({
+        #                     'id': t_o_id,
+        #                     'bboxes': [bbox],
+        #                     'areas': [area],
+        #                     'centroids': [centroid],
+        #                 })
+        # else:
+        #     left_lane_min_x = 0
+        #     left_lane_max_x = 0
+        #     left_lane_min_y = 0
+        #     left_lane_max_y = 0
+        #     right_lane_min_x = 0
+        #     right_lane_max_x = 0
+        #     right_lane_min_y = 0
+        #     right_lane_max_y = 0
+        #     for index in range(len(self.tracked_objects)):
+        #         track_object = self.tracked_objects[index]
+        #         local_min_area_index = np.argmin(track_object['areas'])
+        #         local_max_area_index = np.argmax(track_object['areas'])
+        #         if local_min_area_index > local_max_area_index:
+        #             left_lane_objects.append(track_object)
+        #             angle_moving_at = 0
+        #             if len(track_object['centroids']) >= 2:
+        #                 dy = track_object['centroids'][1][1]-track_object['centroids'][0][1]
+        #                 dx = track_object['centroids'][1][0]-track_object['centroids'][0][0]
+        #                 angle_moving_at = math.atan(dy/dx)
+        #             print(str(track_object['id']), str(angle_moving_at))
+        #
+        #         else:
+        #             right_lane_objects.append(track_object)
+        # return left_lane_objects, right_lane_objects
