@@ -17,6 +17,7 @@ class RegionOfInterest:
         self.object = detection_object
         self.frame = None
 
+
         self.confirm_box_served = False
         self.enter_loop = True
         self.have_roi = False

@@ -2,8 +2,8 @@
 __pycache__/object_tracker.cpython-38.pyc
 .idea/vcs.xml
 __pycache__/save_model.cpython-38.pyc
-parking-lot.mp4
-ringroad.jpg
+test/parking-lot.mp4
+test/ringroad.jpg
 yolo/checkpoints/yolov4-416/variables/variables.data-00000-of-00001
 resources/project - Shortcut.lnk
 yolo/data/yolov4-tiny.weights
