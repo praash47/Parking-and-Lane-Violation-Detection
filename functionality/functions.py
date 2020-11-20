@@ -1,14 +1,18 @@
-from misc.variables import *
-from misc.settings import *
-
+# Third Party Module Imports ##
 from tkinter import *
 import tkinter.font as tkFont
 from PIL import ImageTk, Image
 
+# Local Module Imports ##
+from misc.variables import *
+from misc.settings import *
+
+# We have to make this global otherwise this variable won't work.
 global tkinter_readable_frame
 
 
 def generateTopBottomBar(window=None, title=app_title, bottom_row=4, n_columns=1):
+    # The bar that resides on top and bottom of each window
     top_font_style = tkFont.Font(family=top_font_family, size=top_font_size)
     bottom_font_style = tkFont.Font(family=bottom_font_family, size=bottom_font_size)
 
@@ -27,6 +31,7 @@ def generateTopBottomBar(window=None, title=app_title, bottom_row=4, n_columns=1
 
 
 def generateSubtitleBar(window="", title="", n_columns=1):
+    # The bar that resides below the top bar
     window.subtitle_label = Label(window, text=title, font=subtitle_font_size, bg=subtitle_bg_color,
                                   fg=subtitle_text_color, activebackground=theme_bg_color)
     window.subtitle_label.grid(row=1, column=0, columnspan=n_columns, sticky=subtitle_sticky_direction,
@@ -34,6 +39,7 @@ def generateSubtitleBar(window="", title="", n_columns=1):
 
 
 def writeNewFrame(frame, detection_object):
+    # writes tkinter readable image into our canvas
     if frame is not None:
         # drawing canvas for placing video
         global tkinter_readable_frame
@@ -41,7 +47,10 @@ def writeNewFrame(frame, detection_object):
         detection_object.video_canvas.create_image(0, 0, image=tkinter_readable_frame, anchor=NW)
 
 
+# PARKING VIOLATION FUNCTIONS #
 def isDesiredObject(objects):
+    # filter only Truck, Bus, Motorbike and Car for YOLOv3 in Parking module.
+
     # this condition is specially for one object structure of parking violation
     if len(objects) == 1:
         if objects[0] in desired_objects:
