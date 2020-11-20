@@ -1,7 +1,7 @@
+# Local model imports ##
 from functionality.parking_Violation import *
 from functionality.lane_Violation import *
 from misc.settings import *
-
 from tkinter import filedialog
 
 
