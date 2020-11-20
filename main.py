@@ -9,5 +9,3 @@ def main():
 if __name__ == "__main__":
     # if there is a main function inside this file, then call it
     main()
-
-#This is an invaluable commit
