@@ -23,13 +23,13 @@ class MainMenu:
         self.option2.grid(row=2, column=0, ipadx=option_inner_padding_x, ipady=option_inner_padding_y,
                           pady=option_outer_padding_y)
 
-        def mainMenuSwitch(option):
-            self.choice = option  # After button is pressed, save choice and destroy this window.
-            self.window.destroy()
-            self.window.quit()
-
         self.window.mainloop()
         self.switchLoadWindow()  # this part executes after window has been destroyed.
+
+    def mainMenuSwitch(self, option):
+        self.choice = option  # After button is pressed, save choice and destroy this window.
+        self.window.destroy()
+        self.window.quit()
 
     def switchLoadWindow(self):
         if self.choice is not None:

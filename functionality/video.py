@@ -32,7 +32,7 @@ class Video:
         elif self.thumbnail_there and non_tk:
             return self.thumbnail
 
-    def createCanvasControls(self, detection_object):
+    def createCanvasControls(self, detection    _object):
         detection_object.video_canvas = Canvas(detection_object.window, width=self.width, height=self.height)
         detection_object.video_canvas.grid(row=2, column=0, sticky=W)
         self.controls = Controls(self)

@@ -9,7 +9,6 @@ class Vehicles:
             'class_name': [],
             'objects': []
         }
-        self.not_updated_scenes_for = 0
 
     def register(self):
         for track in self.object.tracker.tracker.tracks:

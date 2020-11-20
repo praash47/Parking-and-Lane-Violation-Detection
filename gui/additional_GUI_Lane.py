@@ -6,8 +6,8 @@ from tkinter import *
 
 
 class AdditionalGUILane:
-    def __init__(self, parking_object):
-        self.object = parking_object
+    def __init__(self, detection_object):
+        self.object = detection_object
     #     self.drawROISlider()
     #
     # def drawROISlider(self):
