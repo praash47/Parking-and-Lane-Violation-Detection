@@ -1,13 +1,16 @@
-from misc.settings import *
-from misc.variables import *
+# Third Party Modules ##
 import cv2
 import numpy as np
+
+# Local Modules ##
+from misc.settings import *
+from misc.variables import *
 
 
 class YOLO:
     def __init__(self, detection_object):
         self.object = detection_object
-        self.disabled = False
+        self.disabled = False  # used to disable YOLO from functioning.
 
         self.outputs = ''
         self.bounding_box = []
@@ -17,8 +20,13 @@ class YOLO:
         with open(parking_yolo_coco_names, "r") as names_file:
             self.classes = [line.strip() for line in names_file.readlines()]
 
+        # OpenCV's direct YOLO v3 reading Deep Neural Network Module     #
         self.net = cv2.dnn.readNet(parking_yolo_config, parking_yolo_weights)
+
+        # Saying that OpenCV with handle YOLO
         self.net.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
+
+        # We want to run YOLO on our CPU
         self.net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
 
     def detector(self):

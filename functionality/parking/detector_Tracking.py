@@ -6,6 +6,7 @@ import cv2
 class DetectorTracker:
     def __init__(self, detection_object):
         self.object = detection_object
+
         # MOTION DETECTOR #
         self.motion_detector_frame1 = None
         self.motion_detector_frame2 = None

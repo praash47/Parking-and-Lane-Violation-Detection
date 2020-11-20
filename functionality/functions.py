@@ -1,11 +1,13 @@
 # Third Party Modules ##
 from tkinter import *
 import tkinter.font as tkFont
-from PIL import ImageTk, Image
 
 # Local Module Imports ##
 from misc.variables import *
 from misc.settings import *
+
+# Problem Creating Modules #
+from PIL import ImageTk, Image
 
 # We have to make this global otherwise this variable won't work.
 global tkinter_readable_frame

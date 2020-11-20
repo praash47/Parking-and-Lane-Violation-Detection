@@ -29,7 +29,7 @@ class ParkingViolation:
 
         # Video, YOLO and Region of Interest Initialization #
         self.video = Video(video_path)
-        self.yolo = YOLO(self)
+        self.yolo = YOLO(self)  # YOLO object is a YOLOv3 algorithm
         self.roi = RegionOfInterest(self)
 
         # Motion Detector and Tracker Initialization #

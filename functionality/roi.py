@@ -1,25 +1,36 @@
-from misc.settings import *
-from misc.variables import *
-from functionality.functions import *
-
+# System Modules ##
 from threading import Timer
+
+# Third Party Modules ##
 from tkinter import *
 from tkinter import messagebox
 import cv2
 
+# Local Modules ##
+from misc.settings import *
+from misc.variables import *
+from functionality.functions import *
+
 
 class RegionOfInterest:
     def __init__(self, detection_object):
+        # Rectangular Region of Interest Coordinates #
+        # Top left coordinates #
         self.x1 = None
         self.y1 = None
+
+        # Bottom right coordinates #
         self.x2 = None
         self.y2 = None
+
         self.object = detection_object
         self.frame = None
 
-
+        # Confirm box for confirmation of ROI in parking module #
         self.confirm_box_served = False
         self.enter_loop = True
+
+        # Have roi is a specific boolean value to specify we are running ROI for lane violation #
         self.have_roi = False
 
     def draw(self):
