@@ -132,7 +132,7 @@ class ParkingViolation:
         if len(self.violation_log) > 0 and not self.reset_violation_btn:
             self.additional_gui.showResetButton()
 
-        writeNewFrame(frame=self.fr ame, detection_object=self)
+        writeNewFrame(frame=self.frame, detection_object=self)
 
         self.window.after(parking_window_update_time, self.detectAndTrack)
 
