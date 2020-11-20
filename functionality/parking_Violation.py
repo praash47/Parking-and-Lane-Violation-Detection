@@ -1,21 +1,28 @@
+# System Modules ##
+import time
+
+# Third Party Modules ##
+from tkinter import *
+
+# Local Modules ##
 from functionality.parking.detector_Tracking import *
 from functionality.parking.parking_Violation_Logic import *
-from functionality.video import *
 from functionality.parking.yolo import *
 from functionality.roi import *
-from gui.confirm_Detect import *
+from functionality.video import *
 from gui.additional_GUI_Parking import *
+from gui.confirm_Detect import *
 from misc.settings import *
 from misc.variables import *
 
-from tkinter import *
-import time
 
+# this is a tkinter bug that tkinter images must be global.
 global thumbnail
 
 
 class ParkingViolation:
     def __init__(self, video_path):
+        # CONFIRMATION WINDOW #
         # show thumbnail and video, ask for confirmation [window] #
         self.detect_ask_window = Tk()
         self.detect_ask_window.title(option1 + " - " + app_title)

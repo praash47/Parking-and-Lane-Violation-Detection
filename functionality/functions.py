@@ -1,4 +1,4 @@
-# Third Party Module Imports ##
+# Third Party Modules ##
 from tkinter import *
 import tkinter.font as tkFont
 from PIL import ImageTk, Image
@@ -11,7 +11,10 @@ from misc.settings import *
 global tkinter_readable_frame
 
 
-def generateTopBottomBar(window=None, title=app_title, bottom_row=4, n_columns=1):
+def generateTopBottomBar(window=None, title=app_title, bottom_row=4, n_columns=1):  # bottom_row specifies
+    # where the Bottom Bar lies. (required for tkinter), n_columns allows us to add multiple columns in
+    # middle section of our program.
+
     # The bar that resides on top and bottom of each window
     top_font_style = tkFont.Font(family=top_font_family, size=top_font_size)
     bottom_font_style = tkFont.Font(family=bottom_font_family, size=bottom_font_size)
@@ -30,7 +33,7 @@ def generateTopBottomBar(window=None, title=app_title, bottom_row=4, n_columns=1
                               ipadx=top_bottom_inner_padding_x, ipady=top_bottom_inner_padding_y)
 
 
-def generateSubtitleBar(window="", title="", n_columns=1):
+def generateSubtitleBar(window="", title="", n_columns=1):  # n_columns sames as top-bottom bar
     # The bar that resides below the top bar
     window.subtitle_label = Label(window, text=title, font=subtitle_font_size, bg=subtitle_bg_color,
                                   fg=subtitle_text_color, activebackground=theme_bg_color)

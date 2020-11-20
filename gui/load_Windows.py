@@ -1,8 +1,10 @@
-# Local model imports ##
+# Third Party Imports ##
+from tkinter import filedialog
+
+# Local Module Imports ##
 from functionality.parking_Violation import *
 from functionality.lane_Violation import *
 from misc.settings import *
-from tkinter import filedialog
 
 
 class SubWindow:  # Window for Parking and Lane Violation LOAD WINDOW
@@ -13,6 +15,7 @@ class SubWindow:  # Window for Parking and Lane Violation LOAD WINDOW
         self.option = option
         self.video_path = ''
 
+        # these functions are present in functionality/functions.py #
         generateTopBottomBar(window=self.window, title=self.window.title())
         generateSubtitleBar(window=self.window, title=option)
 
@@ -27,7 +30,6 @@ class SubWindow:  # Window for Parking and Lane Violation LOAD WINDOW
         self.window.mainloop()
 
     def loadVideo(self):
-        load_new_video = False
         self.video_path = filedialog.askopenfilename(initialdir='D:/',
                                                      title="Load video where you want to detect?",
                                                      filetypes=(
@@ -35,7 +37,6 @@ class SubWindow:  # Window for Parking and Lane Violation LOAD WINDOW
                                                          ("all files", "*.*")
                                                      )
                                                      )
-        video_path = self.video_path
         if self.option == option1:
             self.window.destroy()
             self.window.quit()
@@ -49,8 +50,10 @@ class SubWindow:  # Window for Parking and Lane Violation LOAD WINDOW
 class ParkingViolationLoadWindow(SubWindow):
     def __init__(self):
         SubWindow.__init__(self, option1)
+        # option1 is described in misc/variables.py #
 
 
 class LaneViolationLoadWindow(SubWindow):
     def __init__(self):
         SubWindow.__init__(self, option2)
+        # option2 is described in misc/variables.py #

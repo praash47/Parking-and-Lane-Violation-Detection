@@ -1,4 +1,4 @@
-# Local Module Imports ##
+# Local Modules ##
 from gui.main_Menu import *
 
 

@@ -1,10 +1,16 @@
-from functionality.functions import *
-
-import cv2
+# System Modules ##
 import os
+
+# Third Party Modules ##
+import cv2
 from PIL import ImageTk, Image
 import tkinter.font as tkFont
 
+# Local Modules ##
+from functionality.functions import *
+
+
+# tkinter images bug
 global pause_icon, restart_icon, play_icon
 
 
