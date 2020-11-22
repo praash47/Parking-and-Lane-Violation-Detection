@@ -133,9 +133,9 @@ parking_window_bottom_row = 5
 
 # Main
 parking_window_update_time = 10
-parking_after_motion_check_seconds = 4
+parking_after_motion_check_seconds = 3
 moving_std_deviation_threshold = 1
-parking_violation_report_time = 5
+parking_violation_report_time = 3
 parking_violation_save_directory = "violations/parking/"
 parking_violation_save_extension = ".jpg"
 
