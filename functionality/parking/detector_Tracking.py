@@ -1,6 +1,13 @@
+# A SPECIFIC detector and tracker for parking
+# YOLO version: 3
+# Tracker: MOSSE
+
+# Third Party Modules ##
+import cv2
+
+# Local Modules ##
 from misc.settings import *
 
-import cv2
 
 
 class DetectorTracker:
@@ -22,11 +29,14 @@ class DetectorTracker:
         self.tracked_y2 = None
 
     def motionDetector(self):
+        # Checks whether motion is detected in the frame or not. #
         if self.motion_detector_frame1 is None and self.motion_detector_frame2 is None:
             self.motion_detector_frame1 = self.object.roi.frame
         elif self.motion_detector_frame2 is None:
             self.motion_detector_frame2 = self.object.roi.frame
         else:
+            # apply frame difference to check if motion is detected #
+
             frame_difference = cv2.absdiff(self.motion_detector_frame1, self.motion_detector_frame2)
             grayed_difference = cv2.cvtColor(frame_difference, cv2.COLOR_BGR2GRAY)
             blurred_difference = cv2.GaussianBlur(grayed_difference, detector_blur_output_size, detector_blur_size)
@@ -37,6 +47,7 @@ class DetectorTracker:
             contours, hierarchy = cv2.findContours(dilated_frame, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
             moving_object_count = 0
+            # contours are the list of moving objects in frame.
             for contour in contours:
                 moving_object_count += 1
 
@@ -51,6 +62,7 @@ class DetectorTracker:
 
     def trackObject(self):
         if not self.tracker_initialized:
+            # initialization of the tracker
             if self.object.yolo.bounding_box:
                 bounding_box = self.object.yolo.bounding_box[0]
                 x1 = bounding_box[0]
@@ -62,6 +74,7 @@ class DetectorTracker:
                 self.tracker_initialized = True
 
         else:
+            # update the tracked bounding box of the object
             (track_successful, object_track_box) = self.tracker.update(self.object.roi.frame)
 
             if track_successful:

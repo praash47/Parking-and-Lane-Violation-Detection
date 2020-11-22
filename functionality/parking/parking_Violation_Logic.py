@@ -1,9 +1,11 @@
-from misc.settings import *
-from misc.variables import *
-
+# Third Party Modules ##
 import numpy as np
 import time
 from tkinter import messagebox
+
+# Local Modules ##
+from misc.settings import *
+from misc.variables import *
 
 
 global prev_coordinates, rest_start_time
@@ -75,6 +77,7 @@ def violation(detection_object):
     messagebox.showwarning(violation_warning_box_title, violation_warning_box_message)
 
     # save violator vehicle #
+    # TODO: Violation Log for Parking
     # commented the down one because it doesn't yield proper outputs.
     # cropped_vehicle_frame = detection_object.roi.frame[
     #                         detection_object.detector_tracker.tracked_y1:detection_object.detector_tracker.tracked_y2,

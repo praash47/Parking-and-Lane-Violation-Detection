@@ -1,3 +1,5 @@
+# YOLO v3 module for YOLO v3.
+
 # Third Party Modules ##
 import cv2
 import numpy as np
@@ -35,6 +37,7 @@ class YOLO:
             self.placeObjects()
 
     def findObjects(self):
+        # Main function where YOLO carries out its detections and classifications
         blob = cv2.dnn.blobFromImage(self.object.roi.frame, parking_yolo_dnn_blob_scale_factor,
                                      (parking_yolo_dnn_blob_output_size, parking_yolo_dnn_blob_output_size),
                                      parking_yolo_dnn_blob_mean_sub_value, parking_yolo_dnn_blob_swap_RB, crop=parking_yolo_dnn_blob_crop)
@@ -47,6 +50,7 @@ class YOLO:
         self.outputs = self.net.forward(output_names)
 
     def placeObjects(self):
+        # shows the bounding box on screen.
         bounding_boxes = []
         class_ids = []
         confidences = []
