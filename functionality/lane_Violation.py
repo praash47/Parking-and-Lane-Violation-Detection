@@ -1,3 +1,8 @@
+# Third Party Modules ##
+import numpy as np
+import yolo.object_tracker as obtk
+
+# Local Modules ##
 from functionality.lane.vehicles import *
 from functionality.lane.lane_Processing import *
 from functionality.lane.lane_Violation_Logic import *
@@ -7,9 +12,6 @@ from gui.additional_GUI_Lane import *
 from gui.confirm_Detect import *
 from functionality.roi import *
 from misc.variables import *
-
-import yolo.object_tracker as obtk
-import numpy as np
 
 
 global thumbnail
@@ -111,6 +113,7 @@ class LaneViolation:
             self.tracker.deepSortTrack()
             self.vehicles.register()
 
+            # Only start detection after n fraes
             if self.frame_count > lane_violation_detection_start_after_n_frames:
                 violation = self.checkViolation()
                 if violation['occured']:
@@ -150,11 +153,13 @@ class LaneViolation:
             return None, None
 
     def roiSpecification(self):
+        # select rectangular area
         dim = cv2.selectROI(roi_select_road_window_title, self.video.getThumbnail(non_tk=True))
         self.roi.x1, self.roi.y1, self.roi.x2, self.roi.y2 = dim[0], dim[1], dim[0] + dim[2], dim[1] + dim[3]
         self.roi.getRoiCoords(have_roi=True)
         cv2.destroyWindow(roi_select_road_window_title)
 
+        # select top left and top right of road.
         dim = cv2.selectROI(roi_select_road_top_left_right_title,
                             self.video.getThumbnail(non_tk=True)[self.roi.y1:self.roi.y2, self.roi.x1:self.roi.x2])
         true_x = self.roi.x1 + dim[0]
@@ -175,6 +180,12 @@ class LaneViolation:
         self.window.quit()
 
     def checkViolation(self):
+        """
+        Looks for lane and retrogress violation.
+
+        :return: violation dictionary
+        """
+        # TODO: to test
         violation = {
             'status': False,
             'types': [],
