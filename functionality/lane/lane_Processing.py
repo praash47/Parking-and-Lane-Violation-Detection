@@ -1,12 +1,17 @@
-from misc.settings import *
-from misc.variables import *
-
+# Third Party Modules ##
 import numpy as np
 import cv2
 import math
 
+# Local Modules ##
+from misc.settings import *
+from misc.variables import *
+
 
 class Lanes:
+    """
+    Lanes module for managing lanes.
+    """
     def __init__(self, detection_object):
         self.object = detection_object
         self.lanes_list = []
@@ -19,6 +24,7 @@ class Lanes:
         self.right_lane_area = None
 
     def houghTransform(self):
+        # Pre-processing for hough transform
         frame_width = int(self.object.video.width)
         frame_height = int(self.object.video.height)
         mid_x = int(frame_width / 2)
@@ -29,6 +35,7 @@ class Lanes:
         self.hough(edges, mid_x)
 
     def hough(self, edges, m):
+        # the main hough transform
         lines = cv2.HoughLinesP(edges, hough_rho, hough_theta, hough_threshold, minLineLength=hough_min_line_length,
                                 maxLineGap=hough_max_line_gap)
         lines = self.adjustCoordinates(lines)
@@ -45,6 +52,14 @@ class Lanes:
         cv2.imshow('hough before extension', self.hough_img)
 
     def adjustCoordinates(self, lines):
+        """
+        This function adjusts the co-ordinates so that it matches format.
+
+        Bottom x, Bottom y, Top x, Top y
+
+        :param lines:
+        :return: list of lines
+        """
         adjusted = np.array([[0, 0, 0, 0]])
         for line in lines:
             x1, y1, x2, y2 = line[0]
@@ -61,6 +76,14 @@ class Lanes:
         return adjusted
 
     def seperateLaneLines(self):
+        """
+        This function adjusts the co-ordinates so that it matches format.
+
+        Bottom x, Bottom y, Top x, Top y
+
+        :param lines:
+        :return: void
+        """
         if len(self.lanes_list) >= 4:
             if len(self.lanes_list) > 4:
                 for index, lane in enumerate(self.lanes_list):
@@ -86,6 +109,11 @@ class Lanes:
             print("Not enough lines by hough.")
 
     def getLaneLine(self, x):
+        """
+        This function returns lane line one by one
+        :param x:
+        :return: lane line
+        """
         found = None
         for index, lane in enumerate(self.lanes_list):
             if lane[0] == x:
@@ -93,18 +121,32 @@ class Lanes:
         return self.lanes_list.pop(found)
 
     def extendLaneLines(self):
+        """
+        The lane extension required for extending lines to top of screen and bottom of screen
+        :return: void
+        """
         lanes_list = [self.left_lane_line1, self.left_lane_line2, self.right_lane_line1, self.right_lane_line2]
-        # top and bottom check and extension if short.
+        # top and bottom check and extension if short for each line.
         for lane in lanes_list:
             print(lane)
             dy = abs(lane['bottomy']-lane['topy'])
             dx = abs(lane['topx']-lane['bottomx'])
+            # see if line is not properly extended, then extend
             if lane['topy'] > self.object.road_roi_left[1]:
                 self.extendLaneLine(lane, dy, dx, self.object.road_roi_left[1])
             if lane['bottomy'] < self.object.video.height:
                 self.extendLaneLine(lane, dy, dx, self.object.video.height, up=False)
 
     def extendLaneLine(self, lane, dy, dx, upto, up=True):
+        """
+        Use of
+        :param lane:
+        :param dy: variation of y range of the lane
+        :param dx: variation of x range of the lane
+        :param upto:
+        :param up: True if we are extending to top, if bottom, False
+        :return:
+        """
         if dy > dx:
             steps = dy
         else:

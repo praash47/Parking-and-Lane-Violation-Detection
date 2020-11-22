@@ -1,7 +1,7 @@
-# Third Party Imports ##
+# Third Party Modules ##
 from tkinter import filedialog
 
-# Local Module Imports ##
+# Local Modules ##
 from functionality.parking_Violation import *
 from functionality.lane_Violation import *
 from misc.settings import *

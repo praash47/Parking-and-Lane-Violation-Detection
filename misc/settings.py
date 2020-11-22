@@ -1,4 +1,7 @@
+# System Modules ##
 import os
+
+# Third Party Modules ##
 import cv2
 import numpy as np
 from tkinter import *
@@ -220,7 +223,7 @@ hough_threshold = 100
 hough_min_line_length = 100
 hough_max_line_gap = 10
 
-lane_color = (0,255,0)
+lane_color = (0, 255, 0)
 lane_thickness = 1
 lane_text_font = cv2.FONT_HERSHEY_SIMPLEX
 lane_text_line_type = cv2.LINE_AA
