@@ -139,7 +139,7 @@ class Lanes:
 
     def extendLaneLine(self, lane, dy, dx, upto, up=True):
         """
-        Use of
+        Use of DDA for extension
         :param lane:
         :param dy: variation of y range of the lane
         :param dx: variation of x range of the lane
@@ -174,19 +174,30 @@ class Lanes:
             lane['bottomx'], lane['bottomy'] = int(x), int(y)
 
     def formatLaneLinesProperly(self):
+        # Formatting lanes line for readability ##
         self.left_lane_line1 = self.formatLaneLine(self.left_lane_line1)
         self.left_lane_line2 = self.formatLaneLine(self.left_lane_line2)
         self.right_lane_line1 = self.formatLaneLine(self.right_lane_line1)
         self.right_lane_line2 = self.formatLaneLine(self.right_lane_line2)
 
     def formatLaneLine(self, lane):
+        # Seperate co-ordinates using dictionary for readability ##
         return {'bottomx': lane[0], 'bottomy': lane[1], 'topx': lane[2], 'topy': lane[3]}
 
     def seperateLaneAreas(self):
+        # TODO: To test
         self.left_lane_area = self.seperateLaneArea()
         self.right_lane_area = self.seperateLaneArea(left=False)
 
     def seperateLaneArea(self, left=True):
+        """
+        Seperating Lane Areas on the basis of lane lines so detected and road top left, right
+        and bottom of screen co-ordinates.
+
+        :param left: It specifies lane is left lane or right lane
+        :return: dictionary with tuples for top-left, top-right, bottom-left and bottom-right
+        """
+        # TODO: To test
         if left:
             top_left = self.object.road_roi_left
             top_right = (self.left_lane_line1['topx'], self.left_lane_line1['topy'])
@@ -200,6 +211,8 @@ class Lanes:
         return {'top_left': top_left, 'top_right': top_right, 'bottom_left': bottom_left, 'bottom_right': bottom_right}
 
     def showLaneAreas(self):
+        # TODO: To test
+        # This function is responsible for showing seperated lane areas ##
         left_lane_pts = [
             [self.left_lane_area['top_left'], self.left_lane_area['top_right']],
             [self.left_lane_area['bottom_left'], self.left_lane_area['bottom_right']],
@@ -208,7 +221,7 @@ class Lanes:
             [self.right_lane_area['top_right'], self.right_lane_area['top_right']],
             [self.right_lane_area['bottom_right'], self.right_lane_area['bottom_right']],
                          ]
-        left_lane_pts.zreshape(-1, 1, 2)
+        left_lane_pts.reshape(-1, 1, 2)
         right_lane_pts.reshape(-1, 1, 2)
         self.object.frame = cv2.polylines(self.object.frame, [left_lane_pts], lane_area_polygon_join, left_lane_color)
         self.object.frame = cv2.polylines(self.object.frame, [right_lane_pts], lane_area_polygon_join, right_lane_color)
@@ -226,11 +239,21 @@ class Lanes:
                                         lane_text_line_type)
 
     def determineLane(self, vehicle_object):
+        """
+        Utility function for determining in which lane is vehicle moving.
+
+        This function also seperates likely retrogress and regards vehicle object as suspect and
+        another function later confirms it.
+
+        :param vehicle_object: object whose lane we wanna determine
+        :return: string: either left or right or None
+        """
+        # Only start determining lane when vehicle object is in frame for 10 frames.
         if vehicle_object.in_frame > 10:
             avg_prev_5_areas = sum(vehicle_object.prev_10_areas[-5:]) / 5
             avg_first_5_areas = sum(vehicle_object.prev_10_areas[:5]) / 5
             if vehicle_object.curr_bbox[2] in range(self.left_lane_line2['topx'] +
-                                                    (vehicle_object.curr_bbox[2]-vehicle_object.curr_bbox[2]),
+                                                    (vehicle_object.curr_bbox[2]-vehicle_object.curr_bbox[0]),
                                                     self.object.video.width):
                 if avg_prev_5_areas < avg_first_5_areas:
                     return "likely retrogress"

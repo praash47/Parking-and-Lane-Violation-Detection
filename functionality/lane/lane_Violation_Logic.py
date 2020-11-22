@@ -1,4 +1,11 @@
 def laneCross(vehicle_object, detection_object):
+    """
+    Function that determines if lane has been crossed
+
+    :param vehicle_object:
+    :param detection_object:
+    :return: boolean
+    """
     in_lane = detection_object.lanes.determineLane(vehicle_object)
 
     if vehicleWithinLanePerifery(vehicle_object, detection_object, in_lane):
@@ -20,6 +27,14 @@ def laneCross(vehicle_object, detection_object):
     return False, None
 
 def vehicleWithinLanePerifery(vehicle_object, detection_object, in_lane):
+    """
+    Determines when vehicle lies within lane lines periphery
+
+    :param vehicle_object:
+    :param detection_object:
+    :param in_lane: in which lane is the vehicle
+    :return:boolean
+    """
     if in_lane == "left":
         if vehicle_object.curr_bbox[2] in range(detection_object.lanes.left_lane_line2['bottomx'],
                                                    detection_object.lanes.left_lane_line2['topx']+
@@ -34,6 +49,9 @@ def vehicleWithinLanePerifery(vehicle_object, detection_object, in_lane):
 
 
 def checkInLine(lane, dy, dx, upto, up=True):
+    # TODO: to test
+    # A function to try and extend the lane line to the y co-ordinate mentioned in upto and return
+    # the corresponding x and y for that upto
     steps = None
     if dy > dx:
         steps = dy
@@ -58,6 +76,7 @@ def checkInLine(lane, dy, dx, upto, up=True):
 
 
 def crossingLaneLine(x, y, lane, dy, dx, left_lane=True):
+    # Determines whether lane line is crossed or not
     ex, ey = checkInLine(lane, dy, dx, y, up=False)
     if x > ex and left_lane:
         return True
@@ -67,6 +86,7 @@ def crossingLaneLine(x, y, lane, dy, dx, left_lane=True):
 
 
 def checkRetrogress(vehicle_object, detection_object):
+    # A function that confirms retrogress
     in_lane = detection_object.lanes.determineLane(vehicle_object)
 
     if in_lane == "likely retrogress":

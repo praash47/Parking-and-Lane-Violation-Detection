@@ -1,7 +1,11 @@
+# Third Party Modules ##
 import numpy as np
 
 
 class Vehicles:
+    """
+    Vehicles class is responsible for overall vehicles seen in the scene.
+    """
     def __init__(self, detection_object):
         self.object = detection_object
         self.vehicles_in_scene = {
@@ -11,6 +15,8 @@ class Vehicles:
         }
 
     def register(self):
+        # creating a vehicle object if it is not present in vehicles in scene
+        # bounding box is updated if it is already present.
         for track in self.object.tracker.tracker.tracks:
             bbox = track.to_tlbr()
             class_name = track.get_class()
@@ -37,6 +43,9 @@ class Vehicles:
 
 
 class Vehicle:
+    """
+    A vehicle object that stores information about vehicles
+    """
     def __init__(self, id, bbox, class_name):
         self.id = id
         self.curr_bbox = bbox
@@ -46,6 +55,8 @@ class Vehicle:
         self.in_frame = 1
 
     def prev20Bboxand10AreaAppend(self, bbox):
+        # previous 20 bounding boxes of that vehicle and previous 10 areas of vehicles
+        # that is required for other modules.
         area = abs((bbox[3]-bbox[1]) * (bbox[2]-bbox[0]))
         if len(self.prev_20_bounding_box) == 0:
             self.prev_20_bounding_box.append(bbox)
