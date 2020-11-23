@@ -79,7 +79,7 @@ class LaneViolation:
 
         self.lanes.houghTransform()
         self.lanes.seperateLaneLines()
-        #self.seperateLaneAreas()
+        self.lanes.seperateLaneAreas()
 
         # our main detection window
         self.window = Tk()

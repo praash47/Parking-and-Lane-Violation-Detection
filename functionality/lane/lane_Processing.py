@@ -48,7 +48,6 @@ class Lanes:
                 rel_y1 = self.object.road_roi_left[1] + y1
                 rel_y2 = self.object.road_roi_left[1] + y2
                 self.lanes_list.append([rel_x1, rel_y1, rel_x2, rel_y2])
-            print(lines)
 
         except TypeError:  # No any lines in specified location
             messagebox.showerror(title="Closing Program",
@@ -98,7 +97,6 @@ class Lanes:
                         self.lanes_list.pop(index)
             lanes_order = [self.lanes_list[0][0], self.lanes_list[1][0], self.lanes_list[2][0], self.lanes_list[3][0]]
             lanes_order.sort()
-            print(lanes_order)
             self.left_lane_line1 = self.getLaneLine(lanes_order.pop(0))
             self.left_lane_line2 = self.getLaneLine(lanes_order.pop(0))
             self.right_lane_line1 = self.getLaneLine(lanes_order.pop(0))
@@ -107,7 +105,6 @@ class Lanes:
             self.extendLaneLines()
 
             lanes_list = [self.left_lane_line1, self.left_lane_line2, self.right_lane_line1, self.right_lane_line2]
-            print(self.left_lane_line1, self.left_lane_line2, self.right_lane_line1, self.right_lane_line2)
             cv2.line(self.hough_img, self.object.road_roi_left, self.object.road_roi_right, lane_color, lane_thickness)
             for lane in lanes_list:
                 cv2.line(self.hough_img, (lane['topx'], lane['topy']), (lane['bottomx'], lane['bottomy']),
@@ -140,7 +137,6 @@ class Lanes:
         lanes_list = [self.left_lane_line1, self.left_lane_line2, self.right_lane_line1, self.right_lane_line2]
         # top and bottom check and extension if short for each line.
         for lane in lanes_list:
-            print(lane)
             dy = abs(lane['bottomy']-lane['topy'])
             dx = abs(lane['topx']-lane['bottomx'])
             # see if line is not properly extended, then extend
@@ -195,9 +191,9 @@ class Lanes:
         return {'bottomx': lane[0], 'bottomy': lane[1], 'topx': lane[2], 'topy': lane[3]}
 
     def seperateLaneAreas(self):
-        # TODO: To test
         self.left_lane_area = self.seperateLaneArea()
         self.right_lane_area = self.seperateLaneArea(left=False)
+        self.showLaneAreas()
 
     def seperateLaneArea(self, left=True):
         """
@@ -207,46 +203,40 @@ class Lanes:
         :param left: It specifies lane is left lane or right lane
         :return: dictionary with tuples for top-left, top-right, bottom-left and bottom-right
         """
-        # TODO: To test
         if left:
-            top_left = self.object.road_roi_left
-            top_right = (self.left_lane_line1['topx'], self.left_lane_line1['topy'])
-            bottom_left = (self.object.video.height, 0)
-            bottom_right = (self.left_lane_line1['bottomx'], self.left_lane_line1['bottomy'])
+            top_left = [self.object.road_roi_left[0], self.object.road_roi_left[1]]
+            top_right = [self.left_lane_line1['topx'], self.left_lane_line1['topy']]
+            bottom_left = [0, self.object.video.height]
+            bottom_right = [self.left_lane_line1['bottomx'], self.left_lane_line1['bottomy']]
         else:
-            top_left = (self.right_lane_line2['topx'], self.right_lane_line2['topy'])
-            top_right = self.object.road_roi_right
-            bottom_left = (self.right_lane_line2['bottomx'], self.right_lane_line2['bottomy'])
-            bottom_right = (self.object.video.width, self.object.video.height)
+            top_left = [self.right_lane_line2['topx'], self.right_lane_line2['topy']]
+            top_right = [self.object.road_roi_right[0], self.object.road_roi_right[1]]
+            bottom_left = [self.right_lane_line2['bottomx'], self.right_lane_line2['bottomy']]
+            bottom_right = [self.object.video.width, self.object.video.height]
         return {'top_left': top_left, 'top_right': top_right, 'bottom_left': bottom_left, 'bottom_right': bottom_right}
 
     def showLaneAreas(self):
         # TODO: To test
         # This function is responsible for showing seperated lane areas ##
-        left_lane_pts = [
-            [self.left_lane_area['top_left'], self.left_lane_area['top_right']],
-            [self.left_lane_area['bottom_left'], self.left_lane_area['bottom_right']],
-                         ]
-        right_lane_pts = [
-            [self.right_lane_area['top_right'], self.right_lane_area['top_right']],
-            [self.right_lane_area['bottom_right'], self.right_lane_area['bottom_right']],
-                         ]
-        left_lane_pts.reshape(-1, 1, 2)
-        right_lane_pts.reshape(-1, 1, 2)
-        self.object.frame = cv2.polylines(self.object.frame, [left_lane_pts], lane_area_polygon_join, left_lane_color)
-        self.object.frame = cv2.polylines(self.object.frame, [right_lane_pts], lane_area_polygon_join, right_lane_color)
-        self.object.frame = cv2.putText(self.object.frame, left_lane_text,
-                                        (self.left_lane_area['top_left']+lane_text_padding,
-                                         self.left_lane_area['top_right']+lane_text_padding),
-                                        lane_text_font,
-                                        lane_text_font_scale, left_lane_color, lane_text_thickness,
-                                        lane_text_line_type)
-        self.object.frame = cv2.putText(self.object.frame, right_lane_text,
-                                        (self.right_lane_area['top_left']+lane_text_padding,
-                                         self.right_lane_area['top_right']+lane_text_padding),
-                                        lane_text_font,
-                                        lane_text_font_scale, right_lane_color, lane_text_thickness,
-                                        lane_text_line_type)
+        left_lane_pts = np.array([
+            self.left_lane_area['top_left'], self.left_lane_area['top_right'],
+            self.left_lane_area['bottom_right'], self.left_lane_area['bottom_left']],
+                         np.int32)
+        right_lane_pts = np.array([
+            self.right_lane_area['top_left'], self.right_lane_area['top_right'],
+            self.right_lane_area['bottom_right'], self.right_lane_area['bottom_left']],
+                         np.int32)
+        left_lane_pts = left_lane_pts.reshape((-1, 1, 2))
+        right_lane_pts = right_lane_pts.reshape((-1, 1, 2))
+        self.hough_img = cv2.polylines(self.hough_img, [left_lane_pts], lane_area_polygon_join, left_lane_color)
+        self.hough_img = cv2.polylines(self.hough_img, [right_lane_pts], lane_area_polygon_join, right_lane_color)
+        # self.hough_img = cv2.putText(self.hough_img, left_lane_text,
+        #                                 (self.left_lane_area['top_left']+lane_text_padding,
+        #                                  self.left_lane_area['top_right']+lane_text_padding),
+        #                                 lane_text_font,
+        #                                 lane_text_font_scale, left_lane_color, lane_text_thickness,
+        #                                 lane_text_line_type)
+        cv2.imshow("after lanes area seperation", self.hough_img)
 
     def determineLane(self, vehicle_object):
         """
