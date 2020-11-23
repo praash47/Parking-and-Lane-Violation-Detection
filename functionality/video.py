@@ -3,6 +3,7 @@ import os
 
 # Third Party Modules ##
 import cv2
+import tkinter
 import tkinter.font as tkFont
 
 # Local Modules ##

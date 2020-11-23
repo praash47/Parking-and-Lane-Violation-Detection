@@ -2,6 +2,7 @@
 import numpy as np
 import cv2
 import math
+from tkinter import messagebox
 
 # Local Modules ##
 from misc.settings import *
@@ -38,18 +39,24 @@ class Lanes:
         # the main hough transform
         lines = cv2.HoughLinesP(edges, hough_rho, hough_theta, hough_threshold, minLineLength=hough_min_line_length,
                                 maxLineGap=hough_max_line_gap)
-        lines = self.adjustCoordinates(lines)
-        print(lines)
-        for line in lines:
-            x1, y1, x2, y2 = line[0], line[1], line[2], line[3]
-            rel_x1 = m - hough_crop_range_left + x1
-            rel_x2 = m - hough_crop_range_left + x2
-            rel_y1 = self.object.road_roi_left[1] + y1
-            rel_y2 = self.object.road_roi_left[1] + y2
-            self.lanes_list.append([rel_x1, rel_y1, rel_x2, rel_y2])
-            cv2.line(self.hough_img, (rel_x1, rel_y1), (rel_x2, rel_y2), lane_color, lane_thickness)
-        cv2.line(self.hough_img, self.object.road_roi_left, self.object.road_roi_right, lane_color, lane_thickness)
-        cv2.imshow('hough before extension', self.hough_img)
+        try:
+            lines = self.adjustCoordinates(lines)
+            for line in lines:
+                x1, y1, x2, y2 = line[0], line[1], line[2], line[3]
+                rel_x1 = m - hough_crop_range_left + x1
+                rel_x2 = m - hough_crop_range_left + x2
+                rel_y1 = self.object.road_roi_left[1] + y1
+                rel_y2 = self.object.road_roi_left[1] + y2
+                self.lanes_list.append([rel_x1, rel_y1, rel_x2, rel_y2])
+            print(lines)
+
+        except TypeError:  # No any lines in specified location
+            messagebox.showerror(title="Closing Program",
+                                 message="Either you selected a video of non-matched format or hough is not able to detect"
+                                 "any lines.")
+            raise ValueError("Either you selected a video of non-matched format or hough is not able to detect any lines.")
+
+
 
     def adjustCoordinates(self, lines):
         """
@@ -101,12 +108,17 @@ class Lanes:
 
             lanes_list = [self.left_lane_line1, self.left_lane_line2, self.right_lane_line1, self.right_lane_line2]
             print(self.left_lane_line1, self.left_lane_line2, self.right_lane_line1, self.right_lane_line2)
+            cv2.line(self.hough_img, self.object.road_roi_left, self.object.road_roi_right, lane_color, lane_thickness)
             for lane in lanes_list:
-                cv2.line(self.hough_img, (lane['bottomx'], lane['bottomy']), (lane['topx'], lane['topy']),
+                cv2.line(self.hough_img, (lane['topx'], lane['topy']), (lane['bottomx'], lane['bottomy']),
                          lane_color, lane_thickness)
             cv2.imshow('hough after extension', self.hough_img)
         else:
-            print("Not enough lines by hough.")
+            messagebox.showwarning(title="Not Enough Lines By Hough",
+                                   message="There is not enough lines by hough. Selecting ROI properly may work.")
+            self.object.roiSpecification()
+            self.houghTransform()
+            self.seperateLaneLines()
 
     def getLaneLine(self, x):
         """
@@ -161,17 +173,15 @@ class Lanes:
             x = lane['bottomx']
         while y != upto:
             if up:
-                print("up: ", x, y)
                 y -= yinc
-                x += xinc
-            else:
-                print("down: ", x, y)
-                y += yinc
                 x -= xinc
+            else:
+                y += yinc
+                x += xinc
         if up:
-            lane['topx'], lane['topy'] = int(x), int(y)
+            lane['topx'], lane['topy'] = int(round(x, 0)), int(round(y, 0))
         else:
-            lane['bottomx'], lane['bottomy'] = int(x), int(y)
+            lane['bottomx'], lane['bottomy'] = int(round(x, 0)), int(round(y, 0))
 
     def formatLaneLinesProperly(self):
         # Formatting lanes line for readability ##

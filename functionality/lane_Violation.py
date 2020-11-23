@@ -41,7 +41,7 @@ class LaneViolation:
         self.pause_frame = None  # frame in which last time we paused.
 
         # Lanes and Tracker initialization #
-        self.tracker = obtk.DetectorTracker(self)
+        #self.tracker = obtk.DetectorTracker(self)
         self.lanes = Lanes(self)
 
         # ROI coordinates #
@@ -96,7 +96,7 @@ class LaneViolation:
         generateTopBottomBar(window=self.window, title=app_title, bottom_row=lane_window_bottom_row, n_columns=2)
         generateSubtitleBar(window=self.window, title=option2, n_columns=2)
 
-        self.detectAndTrack()
+        #self.detectAndTrack()
 
         self.frame_count += 1
 
