@@ -33,6 +33,7 @@ class Lanes:
         hough_crop = self.hough_img[self.object.road_roi_left[1]: frame_height, mid_x - hough_crop_range_left: mid_x +
                                                                    hough_crop_range_right]
         edges = cv2.Canny(hough_crop, canny_threshold1, canny_threshold2, apertureSize=canny_aperture_size)
+        cv2.imshow("crop", hough_crop)
         self.hough(edges, mid_x)
 
     def hough(self, edges, m):

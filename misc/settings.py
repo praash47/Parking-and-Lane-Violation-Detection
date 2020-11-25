@@ -208,11 +208,16 @@ lane_violation_detection_start_after_n_frames = 10
 # YOLO
 lane_yolo_model_to_use = 'yolov4'
 
+lane_yolo_max_cosine_distance = 0.4
+lane_yolo_nn_budget = None
+lane_yolo_nms_max_overlap = 1.0
+lane_yolo_model_filename = 'yolo/model_data/mars-small128.pb'
+
 # | LANE PROCESSING |
 # | MODULE |
 # Hough Transform
-hough_crop_range_left = 50
-hough_crop_range_right = 40
+hough_crop_range_left = 110
+hough_crop_range_right = 0
 canny_threshold1 = 50
 canny_threshold2 = 150
 canny_aperture_size = 3

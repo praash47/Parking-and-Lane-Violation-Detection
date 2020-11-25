@@ -1,0 +1,7 @@
+275 100
+600 300
+Vehicles in frame case
+
+150 100
+300 300
+Vehicles not in frame case

@@ -106,13 +106,13 @@ class DetectorTracker:
         self.video_path = self.detection_object.video.path
 
     def yoloDetect(self):
-        if self.detection_object.frame is not None:
-            self.detection_object.roi.frame = cv2.cvtColor(self.detection_object.roi.frame, cv2.COLOR_BGR2RGB)
-            # image = Image.fromarray(self.detection_object.frame)  # Tkinter readable image
+        if self.detection_object.masked_frame is not None:
+            self.detection_object.masked_frame = cv2.cvtColor(self.detection_object.masked_frame, cv2.COLOR_BGR2RGB)
+            # image = Image.fromarray(self.detection_object.masked_frame)  # Tkinter readable image
             self.frame_num += 1
             print('Frame #: ', self.frame_num)
-            self.frame_size = self.detection_object.frame.shape[:2]
-            self.image_data = cv2.resize(self.detection_object.roi.frame, (self.input_size, self.input_size))
+            self.frame_size = self.detection_object.masked_frame.shape[:2]
+            self.image_data = cv2.resize(self.detection_object.masked_frame, (self.input_size, self.input_size))
             self.image_data = self.image_data / 255.
             self.image_data = self.image_data[np.newaxis, ...].astype(np.float32)
             self.start_time = time.time()
@@ -158,7 +158,7 @@ class DetectorTracker:
             self.classes = self.classes[0:int(self.num_objects)]
 
             # format bounding boxes from normalized ymin, xmin, ymax, xmax ---> xmin, ymin, width, height
-            self.original_h, self.original_w, _ = self.detection_object.frame.shape
+            self.original_h, self.original_w, _ = self.detection_object.masked_frame.shape
             self.bboxes = utils.format_boxes(self.bboxes, self.original_h, self.original_w)
 
             # store all predictions in one parameter for simplicity when calling functions
@@ -188,8 +188,9 @@ class DetectorTracker:
             self.bboxes = np.delete(self.bboxes, self.deleted_indx, axis=0)
             self.scores = np.delete(self.scores, self.deleted_indx, axis=0)
 
+            print(self.bboxes)
             # encode yolo detections and feed to tracker
-            self.features = self.encoder(self.detection_object.frame, self.bboxes)
+            self.features = self.encoder(self.detection_object.masked_frame, self.bboxes)
             self.detections = [Detection(bbox, score, class_name, feature) for bbox, score, class_name, feature in
                           zip(self.bboxes, self.scores, names, self.features)]
 
@@ -219,14 +220,14 @@ class DetectorTracker:
             # draw bbox on screen
             color = self.colors[int(track.track_id) % len(self.colors)]
             color = [i * 255 for i in color]
-            cv2.rectangle(self.detection_object.roi.frame, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), color, 2)
-            cv2.rectangle(self.detection_object.roi.frame, (int(bbox[0]), int(bbox[1] - 30)),
+            cv2.rectangle(self.detection_object.masked_frame, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), color, 2)
+            cv2.rectangle(self.detection_object.masked_frame, (int(bbox[0]), int(bbox[1] - 30)),
                           (int(bbox[0]) + (len(class_name) + len(str(track.track_id))) * 17, int(bbox[1])), color, -1)
-            cv2.putText(self.detection_object.roi.frame, class_name + "-" + str(track.track_id), (int(bbox[0]), int(bbox[1] - 10)), 0, 0.75,
+            cv2.putText(self.detection_object.masked_frame, class_name + "-" + str(track.track_id), (int(bbox[0]), int(bbox[1] - 10)), 0, 0.75,
                         (255, 255, 255), 2)
 
         # calculate frames per second of running detections
         self.fps = 1.0 / (time.time() - self.start_time)
         print("FPS: %.2f" % self.fps)
-        self.detection_object.roi.frame = np.asarray(self.detection_object.roi.frame)
-        self.detection_object.roi.frame = cv2.cvtColor(self.detection_object.roi.frame, cv2.COLOR_RGB2BGR)
+        self.detection_object.masked_frame = np.asarray(self.detection_object.masked_frame)
+        self.detection_object.masked_frame = cv2.cvtColor(self.detection_object.masked_frame, cv2.COLOR_RGB2BGR)

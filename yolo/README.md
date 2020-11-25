@@ -53,10 +53,10 @@ To implement the object tracking using YOLOv4, first we convert the .weights int
 python save_model.py --model yolov4 
 
 # Run yolov4 deep sort object tracker on video
-python object_tracker.py --video ./data/video/test.mp4 --output ./outputs/demo.avi --model yolov4
+python object_tracker.py --video yolo/data/video/test.mp4 --output yolo/outputs/demo.avi --model yolov4
 
 # Run yolov4 deep sort object tracker on webcam (set video flag to 0)
-python object_tracker.py --video 0 --output ./outputs/webcam.avi --model yolov4
+python object_tracker.py --video 0 --output yolo/outputs/webcam.avi --model yolov4
 ```
 The output flag allows you to save the resulting video of the object tracker running so that you can view it again later. Video will be saved to the path that you set. (outputs folder is where it will be if you run the above command!)
 
@@ -66,10 +66,10 @@ If you want to run yolov3 set the model flag to ``--model yolov3``, upload the y
 The following commands will allow you to run yolov4-tiny model. Yolov4-tiny allows you to obtain a higher speed (FPS) for the tracker at a slight cost to accuracy. Make sure that you have downloaded the tiny weights file and added it to the 'data' folder in order for commands to work!
 ```
 # save yolov4-tiny model
-python save_model.py --weights ./data/yolov4-tiny.weights --output ./checkpoints/yolov4-tiny-416 --model yolov4 --tiny
+python save_model.py --weights yolo/data/yolov4-tiny.weights --output yolo/checkpoints/yolov4-tiny-416 --model yolov4 --tiny
 
 # Run yolov4-tiny object tracker
-python object_tracker.py --weights ./checkpoints/yolov4-tiny-416 --model yolov4 --video ./data/video/test.mp4 --output ./outputs/tiny.avi --tiny
+python object_tracker.py --weights yolo/checkpoints/yolov4-tiny-416 --model yolov4 --video yolo/data/video/test.mp4 --output yolo/outputs/tiny.avi --tiny
 ```
 
 ## Resulting Video
@@ -97,9 +97,9 @@ This example would allow the classes for person and car to be tracked.
 ```bash
 save_model.py:
   --weights: path to weights file
-    (default: './data/yolov4.weights')
+    (default: 'yolo/data/yolov4.weights')
   --output: path to output
-    (default: './checkpoints/yolov4-416')
+    (default: 'yolo/checkpoints/yolov4-416')
   --[no]tiny: yolov4 or yolov4-tiny
     (default: 'False')
   --input_size: define input size of export model
@@ -111,7 +111,7 @@ save_model.py:
     
  object_tracker.py:
   --video: path to input video (use 0 for webcam)
-    (default: './data/video/test.mp4')
+    (default: 'yolo/data/video/test.mp4')
   --output: path to output video (remember to set right codec for given format. e.g. XVID for .avi)
     (default: None)
   --output_format: codec used in VideoWriter when saving video to file
@@ -119,7 +119,7 @@ save_model.py:
   --[no]tiny: yolov4 or yolov4-tiny
     (default: 'false')
   --weights: path to weights file
-    (default: './checkpoints/yolov4-416')
+    (default: 'yolo/checkpoints/yolov4-416')
   --framework: what framework to use (tf, trt, tflite)
     (default: tf)
   --model: yolov3 or yolov4

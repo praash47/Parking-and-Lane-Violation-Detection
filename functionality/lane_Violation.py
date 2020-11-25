@@ -1,4 +1,5 @@
 # Third Party Modules ##
+import cv2
 import numpy as np
 import yolo.object_tracker as obtk
 
@@ -41,7 +42,8 @@ class LaneViolation:
         self.pause_frame = None  # frame in which last time we paused.
 
         # Lanes and Tracker initialization #
-        #self.tracker = obtk.DetectorTracker(self)
+        self.masked_frame = None
+        self.tracker = obtk.DetectorTracker(self)
         self.lanes = Lanes(self)
 
         # ROI coordinates #
@@ -96,7 +98,7 @@ class LaneViolation:
         generateTopBottomBar(window=self.window, title=app_title, bottom_row=lane_window_bottom_row, n_columns=2)
         generateSubtitleBar(window=self.window, title=option2, n_columns=2)
 
-        #self.detectAndTrack()
+        self.detectAndTrack()
 
         self.frame_count += 1
 
@@ -109,18 +111,20 @@ class LaneViolation:
         self.roi.draw()
 
         if self.frame_received:
+            self.maskRoad()
+
             self.tracker.yoloDetect()
             self.tracker.deepSortTrack()
             self.vehicles.register()
+            #
+            # # Only start detection after n fraes
+            # if self.frame_count > lane_violation_detection_start_after_n_frames:
+            #     violation = self.checkViolation()
+            #     if violation['occured']:
+            #         self.reportViolation()
 
-            # Only start detection after n fraes
-            if self.frame_count > lane_violation_detection_start_after_n_frames:
-                violation = self.checkViolation()
-                if violation['occured']:
-                    self.reportViolation()
 
-
-        writeNewFrame(frame=self.frame, detection_object=self)
+        writeNewFrame(frame=self.masked_frame, detection_object=self)
 
         self.window.after(lane_window_update_time, self.detectAndTrack)
 
@@ -167,7 +171,18 @@ class LaneViolation:
         self.road_roi_left, self.road_roi_right = (true_x, true_y), (true_x + dim[2], true_y)
         cv2.destroyWindow(roi_select_road_top_left_right_title)
 
-
+    def maskRoad(self):
+        mask_vertices = np.array([[
+            self.road_roi_left,
+            self.road_roi_right,
+            (self.lanes.right_lane_area['bottom_right'][0], self.lanes.right_lane_area['bottom_right'][1]),
+            (self.lanes.left_lane_area['bottom_left'][0], self.lanes.left_lane_area['bottom_left'][1]),
+        ]], np.int32)
+        mask = np.zeros_like(self.frame)
+        channel_count_in_mask = self.frame.shape[2]
+        match_mask_color = (255,) * channel_count_in_mask
+        cv2.fillPoly(mask, mask_vertices, match_mask_color)
+        self.masked_frame = cv2.bitwise_and(self.frame, mask)
 
     def menuBar(self):
         # FILE MENU *

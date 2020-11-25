@@ -55,9 +55,12 @@ class RegionOfInterest:
                     self.enter_loop = False
                     self.confirm_box_served = False
         elif self.have_roi:
-            self.object.frame = cv2.rectangle(self.object.frame, (self.x1, self.y1), (self.x2, self.y2),
-                                              roi_rectangle_color, roi_rectangle_thickness)  # draw rectangle
-            self.frame = self.object.frame[self.y1:self.y2, self.x1:self.x2]  # extract frame of size of roi
+            try:
+                self.object.frame = cv2.rectangle(self.object.frame, (self.x1, self.y1), (self.x2, self.y2),
+                                                  roi_rectangle_color, roi_rectangle_thickness)  # draw rectangle
+                self.frame = self.object.frame[self.y1:self.y2, self.x1:self.x2]  # extract frame of size of roi
+            except:
+                messagebox.showwarning(title="Video ended", message="Your video has ended!")
 
     def getRoiCoords(self, have_roi=False):
         if not have_roi:
