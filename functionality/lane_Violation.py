@@ -43,16 +43,16 @@ class LaneViolation:
 
         # Lanes and Tracker initialization #
         self.masked_frame = None
-        self.tracker = obtk.DetectorTracker(self)
-        self.lanes = Lanes(self)
+        #self.tracker = obtk.DetectorTracker(self)
+        #self.lanes = Lanes(self)
 
         # ROI coordinates #
-        self.roi = RegionOfInterest(self)
-        self.road_roi_left = None # road roi
-        self.road_roi_right = None # road roi
+        #self.roi = RegionOfInterest(self)
+        #self.road_roi_left = None # road roi
+        #self.road_roi_right = None # road roi
 
         # Vehicles Object initialization #
-        self.vehicles = Vehicles(self)
+        #self.vehicles = Vehicles(self)
 
         # Frame number counter #
         self.frame_count = 0
@@ -77,11 +77,11 @@ class LaneViolation:
         self.detect_ask_window.destroy()
         self.detect_ask_window.quit()
 
-        self.roiSpecification()
+        #self.roiSpecification()
 
-        self.lanes.houghTransform()
-        self.lanes.seperateLaneLines()
-        self.lanes.seperateLaneAreas()
+        #self.lanes.houghTransform()
+        #self.lanes.seperateLaneLines()
+        #self.lanes.seperateLaneAreas()
 
         # our main detection window
         self.window = Tk()
@@ -93,10 +93,10 @@ class LaneViolation:
         # create the video and it's controls
         self.video.createCanvasControls(detection_object=self)
         self.menuBar()
-        self.additional_gui = AdditionalGUILane(self)
 
-        generateTopBottomBar(window=self.window, title=app_title, bottom_row=lane_window_bottom_row, n_columns=2)
-        generateSubtitleBar(window=self.window, title=option2, n_columns=2)
+        generateTopBottomBar(window=self.window, title=app_title, bottom_row=lane_window_bottom_row, n_columns=3)
+        generateSubtitleBar(window=self.window, title=option2, n_columns=3)
+        self.additional_gui = AdditionalGUILane(self)
 
         self.detectAndTrack()
 
@@ -108,14 +108,14 @@ class LaneViolation:
         # Our main looping function
         self.frame_received, self.frame = self.updateFrame()
 
-        self.roi.draw()
+        #self.roi.draw()
 
-        if self.frame_received:
-            self.maskRoad()
-
-            self.tracker.yoloDetect()
-            self.tracker.deepSortTrack()
-            self.vehicles.register()
+        # if self.frame_received:
+        #     self.maskRoad()
+        #
+        #     self.tracker.yoloDetect()
+        #     self.tracker.deepSortTrack()
+        #     self.vehicles.register()
             #
             # # Only start detection after n fraes
             # if self.frame_count > lane_violation_detection_start_after_n_frames:
@@ -124,7 +124,7 @@ class LaneViolation:
             #         self.reportViolation()
 
 
-        writeNewFrame(frame=self.masked_frame, detection_object=self)
+        writeNewFrame(frame=self.frame, detection_object=self)
 
         self.window.after(lane_window_update_time, self.detectAndTrack)
 

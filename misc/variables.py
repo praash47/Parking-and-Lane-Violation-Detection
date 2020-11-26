@@ -1,5 +1,5 @@
 # ** MAIN VALUES ** #
-by_text = "TVDS Team"
+by_text = "Made with ♥ by TVDS Team"
 app_title = "Lane and Parking Violation"
 
 
