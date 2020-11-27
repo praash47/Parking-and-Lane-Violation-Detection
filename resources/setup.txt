@@ -1,19 +1,19 @@
 Ctrl + Shift + R : (Replace all)
-core.config <- yolo.core.config
-core.utils <- yolo.core.utils
-core.yolov4 <- yolo.core.yolov4
-core.backbone <- yolo.core.backbone
-core.common <- yolo.core.common
+yolo.core.config <- yolo.core.config
+yolo.core.utils <- yolo.core.utils
+yolo.core.yolov4 <- yolo.core.yolov4
+yolo.core.backbone <- yolo.core.backbone
+yolo.core.common <- yolo.core.common
 
-./ <- yolo/
+yolo/ <- yolo/
 
 1. python save_model.py --model yolov4
 
 Ctrl + Shift + R : (Replace all)
-core.config -> yolo.core.config
-core.utils -> yolo.core.utils
-core.yolov4 -> yolo.core.yolov4
-core.backbone -> yolo.core.backbone
-core.common -> yolo.core.common
+yolo.core.config -> yolo.core.config
+yolo.core.utils -> yolo.core.utils
+yolo.core.yolov4 -> yolo.core.yolov4
+yolo.core.backbone -> yolo.core.backbone
+yolo.core.common -> yolo.core.common
 
-./ -> yolo/
+yolo/ -> yolo/

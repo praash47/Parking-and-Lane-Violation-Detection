@@ -175,6 +175,7 @@ class DetectorTracker:
 
             # loop through objects and use class index to get class name, allow only classes in allowed_classes list
             names = []
+            self.deleted_indx = []
             for i in range(self.num_objects):
                 self.class_indx = int(self.classes[i])
                 self.class_name = self.class_names[self.class_indx]
@@ -188,7 +189,6 @@ class DetectorTracker:
             self.bboxes = np.delete(self.bboxes, self.deleted_indx, axis=0)
             self.scores = np.delete(self.scores, self.deleted_indx, axis=0)
 
-            print(self.bboxes)
             # encode yolo detections and feed to tracker
             self.features = self.encoder(self.detection_object.masked_frame, self.bboxes)
             self.detections = [Detection(bbox, score, class_name, feature) for bbox, score, class_name, feature in

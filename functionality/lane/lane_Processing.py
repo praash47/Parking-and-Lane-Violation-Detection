@@ -16,13 +16,43 @@ class Lanes:
     def __init__(self, detection_object):
         self.object = detection_object
         self.lanes_list = []
-        self.left_lane_line1 = None
-        self.left_lane_line2 = None
-        self.right_lane_line1 = None
-        self.right_lane_line2 = None
+        self.left_lane_line1 = {
+            'bottomx': 600,
+            'bottomy': 720,
+            'topx': 603,
+            'topy': 250
+        }
+        self.left_lane_line2 = {
+            'bottomx': 616,
+            'bottomy': 720,
+            'topx': 609,
+            'topy': 250
+        }
+        self.right_lane_line1 = {
+            'bottomx': 651,
+            'bottomy': 720,
+            'topx': 624,
+            'topy': 250
+        }
+        self.right_lane_line2 = {
+            'bottomx': 667,
+            'bottomy': 720,
+            'topx': 630,
+            'topy': 250
+        }
         self.hough_img = None
-        self.left_lane_area = None
-        self.right_lane_area = None
+        self.left_lane_area = {
+            'top_left': [296, 250],
+            'top_right': [603, 250],
+            'bottom_left': [0, 720],
+            'bottom_right': [600, 720]
+        }
+        self.right_lane_area = {
+            'top_left': [630, 250],
+            'top_right': [910, 250],
+            'bottom_left': [667,720],
+            'bottom_right': [1280, 720]
+        }
 
     def houghTransform(self):
         # Pre-processing for hough transform
@@ -253,9 +283,9 @@ class Lanes:
         if vehicle_object.in_frame > 10:
             avg_prev_5_areas = sum(vehicle_object.prev_10_areas[-5:]) / 5
             avg_first_5_areas = sum(vehicle_object.prev_10_areas[:5]) / 5
-            if vehicle_object.curr_bbox[2] in range(self.left_lane_line2['topx'] +
-                                                    (vehicle_object.curr_bbox[2]-vehicle_object.curr_bbox[0]),
-                                                    self.object.video.width):
+            if int(vehicle_object.curr_bbox[2]) in range(self.left_lane_line2['topx'] +
+                                                    int(vehicle_object.curr_bbox[2]-vehicle_object.curr_bbox[0]),
+                                                    int(self.object.video.width)):
                 if avg_prev_5_areas < avg_first_5_areas:
                     return "likely retrogress"
                 return "right"

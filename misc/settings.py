@@ -201,7 +201,7 @@ lane_window_bottom_row = 5
 
 # Main
 lane_window_update_time = 10
-lane_violation_detection_start_after_n_frames = 10
+lane_violation_detection_start_after_n_frames = 2
 
 # | YOLO DEEPSORT |
 # | MODULE |
@@ -240,3 +240,6 @@ lane_text_padding = 10
 lane_area_polygon_join = True
 left_lane_color = (255, 0, 255)
 right_lane_color = (255, 0, 255)
+
+# Lane Violation Setttings
+lane_recent_violation_sleep_time = 3

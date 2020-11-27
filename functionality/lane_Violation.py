@@ -13,6 +13,7 @@ from gui.additional_GUI_Lane import *
 from gui.confirm_Detect import *
 from functionality.roi import *
 from misc.variables import *
+import threading
 
 
 global thumbnail
@@ -21,8 +22,8 @@ global thumbnail
 class LaneViolation:
     def __init__(self, video_path):
         # show thumbnail and video, ask for confirmation [window] #
-        self.detect_ask_window = Tk()
-        self.detect_ask_window.title(option2 + " - " + app_title)
+        # self.detect_ask_window = Tk()
+        # self.detect_ask_window.title(option2 + " - " + app_title)
 
         # Video Initialization #
         self.video = Video(video_path)
@@ -43,39 +44,50 @@ class LaneViolation:
 
         # Lanes and Tracker initialization #
         self.masked_frame = None
-        #self.tracker = obtk.DetectorTracker(self)
-        #self.lanes = Lanes(self)
+        self.tracker = obtk.DetectorTracker(self)
+        self.lanes = Lanes(self)
 
         # ROI coordinates #
-        #self.roi = RegionOfInterest(self)
-        #self.road_roi_left = None # road roi
-        #self.road_roi_right = None # road roi
+        self.roi = RegionOfInterest(self)
+        self.road_roi_left = (296, 250) # road roi
+        self.road_roi_right = (910, 250) # road roi
 
         # Vehicles Object initialization #
-        #self.vehicles = Vehicles(self)
+        self.vehicles = Vehicles(self)
 
         # Frame number counter #
         self.frame_count = 0
 
-        generateTopBottomBar(window=self.detect_ask_window, title=self.detect_ask_window.title(),
-                             bottom_row=lane_window_bottom_row)
-        generateSubtitleBar(window=self.detect_ask_window, title='Confirm Detect?')
-
-        # confirm detect window is popped by this
-        ConfirmDetect(window=self.detect_ask_window, video=self.video, option=option1)
-
-        detect_btn_font = tkFont.Font(family=detect_btn_font_family, size=detect_btn_font_size)
-        detect_btn = Button(self.detect_ask_window, text="Detect", bg=detect_btn_color,
-                            activebackground=detect_btn_active_color,
-                            command=self.startDetectionWindow, font=detect_btn_font)
-        detect_btn.grid(row=4, column=0, ipadx=load_video_inner_padding_x, ipady=load_video_inner_padding_y,
-                        pady=load_video_outer_padding_y)
-
-        self.detect_ask_window.mainloop()
+        # Violation #
+        self.violation_info = None
+        self.violation_log = {
+            'ids': [],
+            'class_names': [],
+            'times': [],
+            'types': [],
+            'video_proof_links': []
+        }
+        self.startDetectionWindow()
+        #
+        # generateTopBottomBar(window=self.detect_ask_window, title=self.detect_ask_window.title(),
+        #                      bottom_row=lane_window_bottom_row)
+        # generateSubtitleBar(window=self.detect_ask_window, title='Confirm Detect?')
+        #
+        # # confirm detect window is popped by this
+        # ConfirmDetect(window=self.detect_ask_window, video=self.video, option=option1)
+        #
+        # detect_btn_font = tkFont.Font(family=detect_btn_font_family, size=detect_btn_font_size)
+        # detect_btn = Button(self.detect_ask_window, text="Detect", bg=detect_btn_color,
+        #                     activebackground=detect_btn_active_color,
+        #                     command=self.startDetectionWindow, font=detect_btn_font)
+        # detect_btn.grid(row=4, column=0, ipadx=load_video_inner_padding_x, ipady=load_video_inner_padding_y,
+        #                 pady=load_video_outer_padding_y)
+        #
+        # self.detect_ask_window.mainloop()
 
     def startDetectionWindow(self):
-        self.detect_ask_window.destroy()
-        self.detect_ask_window.quit()
+        # self.detect_ask_window.destroy()
+        # self.detect_ask_window.quit()
 
         #self.roiSpecification()
 
@@ -100,31 +112,43 @@ class LaneViolation:
 
         self.detectAndTrack()
 
-        self.frame_count += 1
-
         self.window.mainloop()
 
     def detectAndTrack(self):
         # Our main looping function
         self.frame_received, self.frame = self.updateFrame()
 
-        #self.roi.draw()
+        self.roi.draw()
 
-        # if self.frame_received:
-        #     self.maskRoad()
-        #
-        #     self.tracker.yoloDetect()
-        #     self.tracker.deepSortTrack()
-        #     self.vehicles.register()
-            #
-            # # Only start detection after n fraes
-            # if self.frame_count > lane_violation_detection_start_after_n_frames:
-            #     violation = self.checkViolation()
-            #     if violation['occured']:
+        self.frame_count += 1
+
+        if self.frame_received:
+            self.maskRoad()
+
+            # Only start detection after n frames
+            if self.frame_count > lane_violation_detection_start_after_n_frames:
+                self.tracker.yoloDetect()
+                self.tracker.deepSortTrack()
+                self.vehicles.register()
+                self.violation_info = self.checkViolation()
+            #     if self.violation_info['occured']:
             #         self.reportViolation()
 
+        lanes_list = [self.lanes.left_lane_line1, self.lanes.left_lane_line2, self.lanes.right_lane_line1,
+                      self.lanes.right_lane_line2]
+        cv2.line(self.masked_frame, self.road_roi_left, self.road_roi_right, lane_color, lane_thickness)
+        for lane in lanes_list:
+            cv2.line(self.masked_frame, (lane['topx'], lane['topy']), (lane['bottomx'], lane['bottomy']),
+                     lane_color, lane_thickness)
 
-        writeNewFrame(frame=self.frame, detection_object=self)
+        scale_percent = 60  # percent of original size
+        width = int(self.masked_frame.shape[1] * scale_percent / 100)
+        height = int(self.masked_frame.shape[0] * scale_percent / 100)
+        dim = (width, height)
+        # resize image
+        self.masked_frame = cv2.resize(self.masked_frame, dim, interpolation=cv2.INTER_AREA)
+
+        writeNewFrame(frame=self.masked_frame, detection_object=self)
 
         self.window.after(lane_window_update_time, self.detectAndTrack)
 
@@ -201,19 +225,29 @@ class LaneViolation:
         :return: violation dictionary
         """
         # TODO: to test
+        print("checking violation")
         violation = {
             'status': False,
             'types': [],
             'ids': []
         }
         for vehicle_object in self.vehicles.vehicles_in_scene['objects']:
+            print("checking for " + str(vehicle_object.id))
             lane_cross, lane = laneCross(vehicle_object, self)
             if lane_cross:
                 violation['occured'] = True
-                violation['ids'].append(vehicle_object['id'])
+                violation['ids'].append(vehicle_object.id)
                 if lane == "likely retrogress":
                     if checkRetrogress(vehicle_object, self):
                         violation['types'].append("Retrogress")
                 else:
                     violation['types'].append(lane.capitalize() + " Lane")
         return violation
+
+    def reportViolation(self):
+        threading.Thread(self.additional_gui.showViolationFrame(self.violation_info)).start()
+        self.updateViolationLog()
+
+    def updateViolationLog(self):
+        for i in range(len(self.violation_info)):
+            self.violation_log.append()

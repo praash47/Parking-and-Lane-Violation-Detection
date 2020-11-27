@@ -7,6 +7,7 @@ def laneCross(vehicle_object, detection_object):
     :return: boolean
     """
     in_lane = detection_object.lanes.determineLane(vehicle_object)
+    print(in_lane)
 
     if vehicleWithinLanePerifery(vehicle_object, detection_object, in_lane):
         if in_lane == "left":
@@ -41,8 +42,8 @@ def vehicleWithinLanePerifery(vehicle_object, detection_object, in_lane):
                                                    (vehicle_object.curr_bbox[2]-vehicle_object.curr_bbox[0])):
             return True
     else:
-        if vehicle_object.curr_bbox[0] in range(detection_object.lanes.right_lane_line1['bottomx'] -
-                                                   (vehicle_object.curr_bbox[2] - vehicle_object.curr_bbox[0]),
+        if int(vehicle_object.curr_bbox[0]) in range(detection_object.lanes.right_lane_line1['bottomx'] -
+                                                   int(vehicle_object.curr_bbox[2] - vehicle_object.curr_bbox[0]),
                                                    detection_object.lanes.right_lane_line1['topx']):
             return True
     return False
