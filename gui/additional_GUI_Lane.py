@@ -59,9 +59,8 @@ class AdditionalGUILane:
         self.recent_violation_frame.config(width='300')
         self.recent_violation_frame.grid(row=2, column=1)
 
-
-    def showViolationFrame(self, violation_info):
-        for i in range(len(violation_info['ids'])):
+    def showViolationFrame(self, violation_log):
+        for i in range(len(violation_log['ids'])):
             self.recent_violation_frame = tk.LabelFrame(self.object.window)
 
             self.violation_message_title = tk.Message(self.recent_violation_frame)
@@ -73,18 +72,19 @@ class AdditionalGUILane:
             self.violation_message_type.config(anchor='w', aspect='0', background='#ffff80', borderwidth='2')
             self.violation_message_type.config(font='{Microsoft YaHei UI} 14 {}', foreground='#151515', highlightbackground='#ffff20', highlightcolor='#ffff20')
             self.violation_message_type.config(highlightthickness='1', justify='left', relief='groove', takefocus=True)
-            self.violation_message_type.config(text='Type: ' + violation_info['types'][i], width='300')
+            self.violation_message_type.config(text='Type: ' + violation_log['types'][i], width='300')
             self.violation_message_type.place(anchor='nw', bordermode='ignore', height='0', relheight='0.16', relwidth='1.0', relx='0.0', rely='0.26', x='0', y='0')
 
             self.violation = tk.Message(self.recent_violation_frame)
             self.violation.config(anchor='w', background='#ffff80', cursor='arrow', font='{@Yu Gothic UI Light} 12 {}')
-            self.violation.config(relief='groove', text='Description:  A vehicle commenced a ' + violation_info['types'][i] +
+            self.violation.config(relief='groove', text='Description:  A vehicle commenced a ' + violation_log['types'][i] +
                                                        ' . Saving the violation video.', width='290')
             self.violation.place(anchor='nw', relheight='0.65', relwidth='1.0', relx='0.0', rely='0.38', x='0', y='0')
             self.recent_violation_frame.config(height='300', relief='flat', takefocus=False, text='Recent Violation')
             self.recent_violation_frame.config(width='300')
             self.recent_violation_frame.grid(row=2, column=1)
             time.sleep(lane_recent_violation_sleep_time)
+        self.showNoneFrame()
 
     def logShow(self, log=None, photo_list=None):
         if log is not None:

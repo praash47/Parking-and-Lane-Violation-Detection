@@ -30,6 +30,7 @@ class Vehicles:
             else:
                 vehicle_object = self.getVehicleById(id)
                 vehicle_object.curr_bbox = bbox
+                print(vehicle_object.curr_bbox)
                 vehicle_object.prev20Bboxand10AreaAppend(bbox)
                 vehicle_object.in_frame += 1
         print(self.vehicles_in_scene)
@@ -64,7 +65,6 @@ class Vehicle:
         else:
             to_append = np.array([bbox])
             self.prev_20_bounding_box = np.append(self.prev_20_bounding_box, to_append, axis=0)
-            print(self.prev_20_bounding_box)
             if self.prev_20_bounding_box.shape[0] > 20:
                 self.prev_20_bounding_box = np.delete(self.prev_20_bounding_box, 0, 0)
         self.prev_10_areas.append(area)

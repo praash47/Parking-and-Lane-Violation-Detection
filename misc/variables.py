@@ -51,7 +51,7 @@ moving_message = "A bounding box moved."
 # * Violation Values *
 violation_warning_box_title = "VIOLATION"
 violation_warning_box_message = "Violation Occured! Image saved in the directory."
-violation_save_name_prefix = "parking-violation-id-"
+violation_save_name_prefix = "violation-id-"
 
 # * Reset Values *
 reset_violation_btn_title = "Reset"

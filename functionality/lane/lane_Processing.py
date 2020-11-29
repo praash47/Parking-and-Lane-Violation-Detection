@@ -268,29 +268,3 @@ class Lanes:
         #                                 lane_text_font_scale, left_lane_color, lane_text_thickness,
         #                                 lane_text_line_type)
         cv2.imshow("after lanes area seperation", self.hough_img)
-
-    def determineLane(self, vehicle_object):
-        """
-        Utility function for determining in which lane is vehicle moving.
-
-        This function also seperates likely retrogress and regards vehicle object as suspect and
-        another function later confirms it.
-
-        :param vehicle_object: object whose lane we wanna determine
-        :return: string: either left or right or None
-        """
-        # Only start determining lane when vehicle object is in frame for 10 frames.
-        if vehicle_object.in_frame > 10:
-            avg_prev_5_areas = sum(vehicle_object.prev_10_areas[-5:]) / 5
-            avg_first_5_areas = sum(vehicle_object.prev_10_areas[:5]) / 5
-            if int(vehicle_object.curr_bbox[2]) in range(self.left_lane_line2['topx'] +
-                                                    int(vehicle_object.curr_bbox[2]-vehicle_object.curr_bbox[0]),
-                                                    int(self.object.video.width)):
-                if avg_prev_5_areas < avg_first_5_areas:
-                    return "likely retrogress"
-                return "right"
-            else:
-                if avg_prev_5_areas > avg_first_5_areas:
-                    return "likely retrogress"
-                return "left"
-        return None

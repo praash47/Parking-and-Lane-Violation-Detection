@@ -1,3 +1,7 @@
+# System Modules ##
+import time
+from datetime import datetime
+
 # Third Party Modules ##
 import cv2
 import numpy as np
@@ -34,7 +38,7 @@ class LaneViolation:
 
         # Tkinter Initializations #
         self.window = ''
-        self.additional_gui = ''
+        self.additional_gui = None
         self.video_canvas = ''
         self.menu_bar = ''
 
@@ -65,6 +69,7 @@ class LaneViolation:
             'class_names': [],
             'times': [],
             'types': [],
+            'pictures': [],
             'video_proof_links': []
         }
         self.startDetectionWindow()
@@ -131,8 +136,12 @@ class LaneViolation:
                 self.tracker.deepSortTrack()
                 self.vehicles.register()
                 self.violation_info = self.checkViolation()
-            #     if self.violation_info['occured']:
-            #         self.reportViolation()
+                if self.violation_info['status']:
+                    print("Violation!!")
+                    print(self.violation_info)
+                    self.logViolation()
+                    print(self.violation_log)
+                    self.showInGUI()
 
         lanes_list = [self.lanes.left_lane_line1, self.lanes.left_lane_line2, self.lanes.right_lane_line1,
                       self.lanes.right_lane_line2]
@@ -145,8 +154,14 @@ class LaneViolation:
         width = int(self.masked_frame.shape[1] * scale_percent / 100)
         height = int(self.masked_frame.shape[0] * scale_percent / 100)
         dim = (width, height)
-        # resize image
-        self.masked_frame = cv2.resize(self.masked_frame, dim, interpolation=cv2.INTER_AREA)
+
+        try:
+            # resize image
+            self.masked_frame = cv2.resize(self.masked_frame, dim, interpolation=cv2.INTER_AREA)
+            self.video_canvas.configure(width=width, height=height)
+
+        except:
+            messagebox.showerror("Ended or Failed", "Your video ended or failed!")
 
         writeNewFrame(frame=self.masked_frame, detection_object=self)
 
@@ -225,29 +240,66 @@ class LaneViolation:
         :return: violation dictionary
         """
         # TODO: to test
-        print("checking violation")
         violation = {
             'status': False,
             'types': [],
-            'ids': []
+            'ids': [],
+            'class_names': [],
+            'violation_bbox': []
         }
         for vehicle_object in self.vehicles.vehicles_in_scene['objects']:
-            print("checking for " + str(vehicle_object.id))
-            lane_cross, lane = laneCross(vehicle_object, self)
-            if lane_cross:
-                violation['occured'] = True
+            print("checking for id " + str(vehicle_object.id))
+            where_is_vehicle = checkVehicleLocation(self, vehicle_object)
+            if where_is_vehicle == "Overlapping Lane Lines":
+                violation['status'] = True
+                violation['types'].append("Lane Cross")
                 violation['ids'].append(vehicle_object.id)
-                if lane == "likely retrogress":
-                    if checkRetrogress(vehicle_object, self):
-                        violation['types'].append("Retrogress")
-                else:
-                    violation['types'].append(lane.capitalize() + " Lane")
+                violation['class_names'].append(vehicle_object.class_name)
+                violation['violation_bbox'].append(vehicle_object.curr_bbox)
+            elif checkRetrogress(self, vehicle_object, where_is_vehicle):
+                violation['status'] = True
+                violation['types'].append("Retrogress")
+                violation['ids'].append(vehicle_object.id)
+                violation['class_names'].append(vehicle_object.class_name)
+                violation['violation_bbox'].append(vehicle_object.curr_bbox)
+
         return violation
 
-    def reportViolation(self):
-        threading.Thread(self.additional_gui.showViolationFrame(self.violation_info)).start()
-        self.updateViolationLog()
+    def logViolation(self):
+        for i in range(len(self.violation_info['ids'])):
+            if self.violation_info['ids'][i] not in self.violation_log['ids']:
+                self.violation_log['ids'].append(self.violation_info['ids'][i])
+                self.violation_log['class_names'].append(self.violation_info['class_names'][i])
 
-    def updateViolationLog(self):
-        for i in range(len(self.violation_info)):
-            self.violation_log.append()
+                now = datetime.now()
+                current_time = now.strftime("%H:%M:%S")
+                self.violation_log['times'].append(current_time)
+                self.violation_log['types'].append(self.violation_info['types'][i])
+
+                violator_picture = self.masked_frame[int(self.violation_info['violation_bbox'][i][1]):int(self.violation_info['violation_bbox'][i][3]),
+                                   int(self.violation_info['violation_bbox'][i][0]):int(self.violation_info['violation_bbox'][i][2])]
+                save_path = lane_violation_img_save_directory + violation_save_name_prefix + str(
+                    self.violation_info['ids'][i]) + lane_violation_img_save_extension
+                cv2.imwrite(save_path, violator_picture)
+                self.violation_log['pictures'].append(save_path)
+
+                start_frame = self.video.cap.get(cv2.CAP_PROP_POS_FRAMES)
+                cap = cv2.VideoCapture(self.video.path)
+                cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
+                video_save_path = lane_violation_vid_save_directory + violation_save_name_prefix + str(
+                    self.violation_info['ids'][i]) + lane_violation_vid_save_extension
+                fourcc = cv2.VideoWriter_fourcc(*'H264')
+                out = cv2.VideoWriter(video_save_path, fourcc, 20.0, (self.masked_frame.shape[1], self.masked_frame.shape[0]))
+                try:
+                    n = 0
+                    while n < 10:
+                        _, frame = cap.read()
+                        out.write(frame)
+                        n += 1
+                except:
+                    print("Not enough frames for video output")
+
+                self.violation_log['video_proof_links'].append(video_save_path)
+
+    def showInGUI(self):
+        self.additional_gui.showViolationFrame(self.violation_log)
