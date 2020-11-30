@@ -242,7 +242,7 @@ left_lane_color = (255, 0, 255)
 right_lane_color = (255, 0, 255)
 
 # Lane Violation Setttings
-lane_recent_violation_sleep_time = 3
+lane_recent_violation_sleep_time = 1
 lane_violation_img_save_directory = "violations/lane/images/"
 lane_violation_img_save_extension = ".jpg"
 

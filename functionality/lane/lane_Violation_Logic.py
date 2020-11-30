@@ -1,16 +1,16 @@
 import cv2
 
 def checkVehicleLocation(lane_areas, vehicle):
-    if int(vehicle.curr_bbox[0]) in range(lane_areas.lanes.right_lane_area['top_left'][0], lane_areas.lanes.right_lane_area['top_right'][0]) \
-        and int(vehicle.curr_bbox[2]) in range(lane_areas.lanes.right_lane_area['bottom_left'][0], lane_areas.lanes.right_lane_area['bottom_right'][0]):
+    if int(vehicle.curr_bbox[0]) in range(lane_areas.lanes.right_lane_area['top_left'][0]-2, lane_areas.lanes.right_lane_area['top_right'][0]) \
+        and int(vehicle.curr_bbox[2]) in range(lane_areas.lanes.right_lane_area['bottom_left'][0]-2, lane_areas.lanes.right_lane_area['bottom_right'][0]):
         return "Right Lane"
 
-    elif int(vehicle.curr_bbox[0]) in range(lane_areas.lanes.left_lane_area['top_left'][0], lane_areas.lanes.left_lane_area['top_right'][0]) \
-        and int(vehicle.curr_bbox[2]) in range(lane_areas.lanes.left_lane_area['bottom_left'][0], lane_areas.lanes.left_lane_area['bottom_right'][0]):
+    elif int(vehicle.curr_bbox[0]) in range(lane_areas.lanes.left_lane_area['top_left'][0], lane_areas.lanes.left_lane_area['top_right'][0]+2) \
+        and int(vehicle.curr_bbox[2]) in range(lane_areas.lanes.left_lane_area['bottom_left'][0], lane_areas.lanes.left_lane_area['bottom_right'][0]+2):
         return "Left Lane"
 
-    elif int(vehicle.curr_bbox[0]) in range(lane_areas.lanes.left_lane_area['bottom_right'][0], lane_areas.lanes.right_lane_area['bottom_left'][0]) \
-        or int(vehicle.curr_bbox[2]) in range(lane_areas.lanes.left_lane_area['bottom_right'][0], lane_areas.lanes.right_lane_area['bottom_left'][0]):
+    elif int(vehicle.curr_bbox[0]) in range(lane_areas.lanes.left_lane_area['bottom_right'][0]+2, lane_areas.lanes.right_lane_area['bottom_left'][0]-2) \
+        or int(vehicle.curr_bbox[2]) in range(lane_areas.lanes.left_lane_area['bottom_right'][0]+2, lane_areas.lanes.right_lane_area['bottom_left'][0]-2):
         return "Within Lane"
 
     elif int(vehicle.curr_bbox[0]) in range(lane_areas.lanes.left_lane_area['top_left'][0], lane_areas.lanes.left_lane_area['top_right'][0]) \
@@ -59,11 +59,11 @@ def checkRetrogress(obj, vehicle, where_is_vehicle):
     avg_first_5_areas = sum(vehicle.prev_10_areas[:5]) / 5
     avg_prev_5_areas = sum(vehicle.prev_10_areas[-5:]) / 5
     if where_is_vehicle == "Left":
-        if avg_first_5_areas < avg_prev_5_areas:
+        if avg_first_5_areas > avg_prev_5_areas:
             return True
 
     elif where_is_vehicle == "Right":
-        if avg_first_5_areas > avg_prev_5_areas:
+        if avg_first_5_areas < avg_prev_5_areas:
             return True
 
     elif where_is_vehicle == "Within Lane":

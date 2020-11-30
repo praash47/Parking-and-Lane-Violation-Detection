@@ -302,4 +302,5 @@ class LaneViolation:
                 self.violation_log['video_proof_links'].append(video_save_path)
 
     def showInGUI(self):
-        self.additional_gui.showViolationFrame(self.violation_log)
+        threading.Thread(self.additional_gui.showViolationFrame(self.violation_log)).start()
+        threading.Thread(self.additional_gui.logUpdate(self.violation_log)).start()
