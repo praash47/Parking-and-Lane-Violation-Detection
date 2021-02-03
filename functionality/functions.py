@@ -56,7 +56,7 @@ def writeNewFrame(frame, detection_object):
 def isDesiredObject(objects):
     # filter only Truck, Bus, Motorbike and Car for YOLOv3 in Parking module.
 
-    # this condition is specially for one object structure of parking violation
+    # Parking violation module is only able to work with one vehicle.
     if len(objects) == 1:
         if objects[0] in desired_objects:
             return True

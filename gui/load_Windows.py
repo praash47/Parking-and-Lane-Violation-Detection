@@ -40,7 +40,15 @@ class SubWindow:  # Window for Parking and Lane Violation LOAD WINDOW
         if self.option == option1:
             self.window.destroy()
             self.window.quit()
-            ParkingViolation(self.video_path)
+
+            object_create = ParkingViolation(self.video_path)
+
+            while object_create.new_object == 'Yes':
+                start_frame = object_create.video.cap.get(cv2.CAP_PROP_POS_FRAMES) - 1
+                video_path = object_create.video.path
+
+                del object_create
+                object_create = ParkingViolation(video_path, start_frame)
         else:
             self.window.destroy()
             self.window.quit()

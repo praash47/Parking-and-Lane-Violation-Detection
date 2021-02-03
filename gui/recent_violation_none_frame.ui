@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface version="1.0">
+  <object class="tk.LabelFrame" id="recent_violation_frame">
+    <property name="height">300</property>
+    <property name="relief">flat</property>
+    <property name="takefocus">false</property>
+    <property name="text" translatable="yes">Recent Violation</property>
+    <property name="width">300</property>
+    <layout manager="grid">
+      <property name="propagate">True</property>
+    </layout>
+    <child>
+      <object class="tk.Message" id="violation_message_title">
+        <property name="background">#95ffff</property>
+        <property name="font">{Lucida Sans Typewriter} 48 {}</property>
+        <property name="foreground">#1b1b1b</property>
+        <property name="justify">center</property>
+        <property name="relief">raised</property>
+        <property name="text" translatable="yes">NONE</property>
+        <property name="width">400</property>
+        <layout manager="place">
+          <property name="anchor">nw</property>
+          <property name="relheight">1.0</property>
+          <property name="relwidth">1.0</property>
+          <property name="x">0</property>
+          <property name="y">0</property>
+        </layout>
+      </object>
+    </child>
+  </object>
+</interface>

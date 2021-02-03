@@ -1,8 +1,5 @@
-# System Modules ##
-import time
-from datetime import datetime
-
 # Third Party Modules ##
+import datetime
 import cv2
 import numpy as np
 import yolo.object_tracker as obtk
@@ -17,7 +14,7 @@ from gui.additional_GUI_Lane import *
 from gui.confirm_Detect import *
 from functionality.roi import *
 from misc.variables import *
-import threading
+from misc.settings import *
 
 
 global thumbnail
@@ -26,8 +23,8 @@ global thumbnail
 class LaneViolation:
     def __init__(self, video_path):
         # show thumbnail and video, ask for confirmation [window] #
-        # self.detect_ask_window = Tk()
-        # self.detect_ask_window.title(option2 + " - " + app_title)
+        self.detect_ask_window = Tk()
+        self.detect_ask_window.title(option2 + " - " + app_title)
 
         # Video Initialization #
         self.video = Video(video_path)
@@ -38,7 +35,7 @@ class LaneViolation:
 
         # Tkinter Initializations #
         self.window = ''
-        self.additional_gui = None
+        self.additional_gui = ''
         self.video_canvas = ''
         self.menu_bar = ''
 
@@ -53,8 +50,8 @@ class LaneViolation:
 
         # ROI coordinates #
         self.roi = RegionOfInterest(self)
-        self.road_roi_left = (296, 250) # road roi
-        self.road_roi_right = (910, 250) # road roi
+        self.road_roi_left = (296, 250)  # road roi
+        self.road_roi_right = (910, 250)  # road roi
 
         # Vehicles Object initialization #
         self.vehicles = Vehicles(self)
@@ -73,26 +70,25 @@ class LaneViolation:
             'video_proof_links': []
         }
         self.startDetectionWindow()
-        #
         # generateTopBottomBar(window=self.detect_ask_window, title=self.detect_ask_window.title(),
         #                      bottom_row=lane_window_bottom_row)
         # generateSubtitleBar(window=self.detect_ask_window, title='Confirm Detect?')
-        #
-        # # confirm detect window is popped by this
+
+        # confirm detect window is popped by this
         # ConfirmDetect(window=self.detect_ask_window, video=self.video, option=option1)
-        #
+
         # detect_btn_font = tkFont.Font(family=detect_btn_font_family, size=detect_btn_font_size)
         # detect_btn = Button(self.detect_ask_window, text="Detect", bg=detect_btn_color,
         #                     activebackground=detect_btn_active_color,
         #                     command=self.startDetectionWindow, font=detect_btn_font)
         # detect_btn.grid(row=4, column=0, ipadx=load_video_inner_padding_x, ipady=load_video_inner_padding_y,
         #                 pady=load_video_outer_padding_y)
-        #
+
         # self.detect_ask_window.mainloop()
 
     def startDetectionWindow(self):
-        # self.detect_ask_window.destroy()
-        # self.detect_ask_window.quit()
+        self.detect_ask_window.destroy()
+        self.detect_ask_window.quit()
 
         #self.roiSpecification()
 
@@ -116,6 +112,8 @@ class LaneViolation:
         self.additional_gui = AdditionalGUILane(self)
 
         self.detectAndTrack()
+
+        self.frame_count += 1
 
         self.window.mainloop()
 
@@ -162,6 +160,7 @@ class LaneViolation:
 
         except:
             messagebox.showerror("Ended or Failed", "Your video ended or failed!")
+
 
         writeNewFrame(frame=self.masked_frame, detection_object=self)
 
@@ -271,13 +270,15 @@ class LaneViolation:
                 self.violation_log['ids'].append(self.violation_info['ids'][i])
                 self.violation_log['class_names'].append(self.violation_info['class_names'][i])
 
-                now = datetime.now()
+                now = datetime.datetime.now()
                 current_time = now.strftime("%H:%M:%S")
                 self.violation_log['times'].append(current_time)
                 self.violation_log['types'].append(self.violation_info['types'][i])
 
-                violator_picture = self.masked_frame[int(self.violation_info['violation_bbox'][i][1]):int(self.violation_info['violation_bbox'][i][3]),
-                                   int(self.violation_info['violation_bbox'][i][0]):int(self.violation_info['violation_bbox'][i][2])]
+                violator_picture = self.masked_frame[int(self.violation_info['violation_bbox'][i][1]):int(
+                    self.violation_info['violation_bbox'][i][3]),
+                                   int(self.violation_info['violation_bbox'][i][0]):int(
+                                       self.violation_info['violation_bbox'][i][2])]
                 save_path = lane_violation_img_save_directory + violation_save_name_prefix + str(
                     self.violation_info['ids'][i]) + lane_violation_img_save_extension
                 cv2.imwrite(save_path, violator_picture)
@@ -289,7 +290,8 @@ class LaneViolation:
                 video_save_path = lane_violation_vid_save_directory + violation_save_name_prefix + str(
                     self.violation_info['ids'][i]) + lane_violation_vid_save_extension
                 fourcc = cv2.VideoWriter_fourcc(*'H264')
-                out = cv2.VideoWriter(video_save_path, fourcc, 20.0, (self.masked_frame.shape[1], self.masked_frame.shape[0]))
+                out = cv2.VideoWriter(video_save_path, fourcc, 20.0,
+                                      (self.masked_frame.shape[1], self.masked_frame.shape[0]))
                 try:
                     n = 0
                     while n < 10:
@@ -302,5 +304,4 @@ class LaneViolation:
                 self.violation_log['video_proof_links'].append(video_save_path)
 
     def showInGUI(self):
-        threading.Thread(self.additional_gui.showViolationFrame(self.violation_log)).start()
-        threading.Thread(self.additional_gui.logUpdate(self.violation_log)).start()
+        self.additional_gui.showViolationFrame(self.violation_log)

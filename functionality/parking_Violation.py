@@ -1,9 +1,3 @@
-# System Modules ##
-import time
-
-# Third Party Modules ##
-from tkinter import *
-
 # Local Modules ##
 from functionality.parking.detector_Tracking import *
 from functionality.parking.parking_Violation_Logic import *
@@ -21,7 +15,7 @@ global thumbnail
 
 
 class ParkingViolation:
-    def __init__(self, video_path):
+    def __init__(self, video_path, start_frame=None):
         # CONFIRMATION WINDOW #
         # show thumbnail and video, ask for confirmation [window] #
         self.detect_ask_window = Tk()
@@ -48,28 +42,33 @@ class ParkingViolation:
 
         # Pausing features initialization #
         self.pause_video = False
-        self.pause_frame = None  # frame in which last time we paused.
+        self.pause_frame = start_frame  # frame in which last time we paused.
 
         # Violation Features #
         self.violation_img_written = False
         self.violation_log = []
         self.reset_violation_btn = None
+        self.new_object = None
 
-        generateTopBottomBar(window=self.detect_ask_window, title=self.detect_ask_window.title(),
-                             bottom_row=parking_window_bottom_row)
-        generateSubtitleBar(window=self.detect_ask_window, title='Confirm Detect?')
+        if not start_frame:
+            generateTopBottomBar(window=self.detect_ask_window, title=self.detect_ask_window.title(),
+                                 bottom_row=parking_window_bottom_row)
+            generateSubtitleBar(window=self.detect_ask_window, title='Confirm Detect?')
 
-        # confirm detect window is popped by this
-        ConfirmDetect(window=self.detect_ask_window, video=self.video, option=option1)
+            # confirm detect window is popped by this
+            ConfirmDetect(window=self.detect_ask_window, video=self.video, option=option1)
 
-        detect_btn_font = tkFont.Font(family=detect_btn_font_family, size=detect_btn_font_size)
-        detect_btn = Button(self.detect_ask_window, text="Detect", bg=detect_btn_color,
-                            activebackground=detect_btn_active_color,
-                            command=self.startDetectionWindow, font=detect_btn_font)
-        detect_btn.grid(row=4, column=0, ipadx=load_video_inner_padding_x, ipady=load_video_inner_padding_y,
-                        pady=load_video_outer_padding_y)
+            detect_btn_font = tkFont.Font(family=detect_btn_font_family, size=detect_btn_font_size)
+            detect_btn = Button(self.detect_ask_window, text="Detect", bg=detect_btn_color,
+                                activebackground=detect_btn_active_color,
+                                command=self.startDetectionWindow, font=detect_btn_font)
+            detect_btn.grid(row=4, column=0, ipadx=load_video_inner_padding_x, ipady=load_video_inner_padding_y,
+                            pady=load_video_outer_padding_y)
 
-        self.detect_ask_window.mainloop()
+            self.detect_ask_window.mainloop()
+
+        else:
+            self.startDetectionWindow()
 
     def startDetectionWindow(self):
         self.detect_ask_window.destroy()
@@ -206,23 +205,10 @@ class ParkingViolation:
     def reset(self):  # NOT WORKING #
         # TODO: Fix reset button
         self.reset_violation_btn.destroy()
+        self.window.destroy()
+        self.window.quit()
 
-        # Enable Yolo
-        self.yolo.disabled = False
-
-        # Enable motion detector and uninitialize tracker
-        self.detector_tracker.disable_motion_detector = False
-        self.detector_tracker.tracker_initialized = False
-
-        # Reset Motion Detector Frames
-        self.detector_tracker.motion_detector_frame1 = None
-        self.detector_tracker.motion_detector_frame2 = None
-
-        # Reset tracked coordinates
-        self.detector_tracker.tracked_x1 = None
-        self.detector_tracker.tracked_y1 = None
-        self.detector_tracker.tracked_x2 = None
-        self.detector_tracker.tracked_y2 = None
+        self.new_object = 'Yes'
 
     def quitProgram(self):
         self.window.destroy()

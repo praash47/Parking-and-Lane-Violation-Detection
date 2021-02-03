@@ -8,6 +8,7 @@ import tkinter.font as tkFont
 
 # Local Modules ##
 from functionality.functions import *
+from misc.settings import *
 
 # Problem Creating Modules #
 from PIL import ImageTk, Image
