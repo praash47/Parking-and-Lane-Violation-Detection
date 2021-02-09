@@ -4,8 +4,14 @@ from absl import app
 
 
 def main(_argv):
-    # pass the control to gui/main_Menu.py
-    MainMenu()
+    # pass the control to gui/main_Menu.py and till user doesn't press exit,
+    # keep on showing main menu.
+
+    main_menu = MainMenu()
+    while not main_menu.exit:
+        main_menu = MainMenu()
+
+    del main_menu
 
 
 if __name__ == "__main__":

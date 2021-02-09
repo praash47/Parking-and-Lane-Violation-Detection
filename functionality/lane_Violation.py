@@ -1,7 +1,6 @@
 # Third Party Modules ##
 import datetime
-import cv2
-import numpy as np
+import threading
 import yolo.object_tracker as obtk
 
 # Local Modules ##
@@ -9,12 +8,11 @@ from functionality.lane.vehicles import *
 from functionality.lane.lane_Processing import *
 from functionality.lane.lane_Violation_Logic import *
 from functionality.video import *
-from functionality.functions import *
 from gui.additional_GUI_Lane import *
-from gui.confirm_Detect import *
 from functionality.roi import *
-from misc.variables import *
 from misc.settings import *
+from misc.variables import *
+import cv2
 
 
 global thumbnail
@@ -31,13 +29,13 @@ class LaneViolation:
 
         # OpenCV Initializations #
         self.frame_received = ''
-        self.frame = ''
+        self.frame = None
 
         # Tkinter Initializations #
-        self.window = ''
-        self.additional_gui = ''
-        self.video_canvas = ''
-        self.menu_bar = ''
+        self.window = None
+        self.additional_gui = None
+        self.video_canvas = None
+        self.menu_bar = None
 
         # Pausing features initialization #
         self.pause_video = False
@@ -45,7 +43,7 @@ class LaneViolation:
 
         # Lanes and Tracker initialization #
         self.masked_frame = None
-        self.tracker = obtk.DetectorTracker(self)
+        # self.tracker = obtk.DetectorTracker(self)
         self.lanes = Lanes(self)
 
         # ROI coordinates #
@@ -69,6 +67,7 @@ class LaneViolation:
             'pictures': [],
             'video_proof_links': []
         }
+        self.start_time = time.time()
         self.startDetectionWindow()
         # generateTopBottomBar(window=self.detect_ask_window, title=self.detect_ask_window.title(),
         #                      bottom_row=lane_window_bottom_row)
@@ -90,11 +89,11 @@ class LaneViolation:
         self.detect_ask_window.destroy()
         self.detect_ask_window.quit()
 
-        #self.roiSpecification()
+        # self.roiSpecification()
 
-        #self.lanes.houghTransform()
-        #self.lanes.seperateLaneLines()
-        #self.lanes.seperateLaneAreas()
+        # self.lanes.houghTransform()
+        # self.lanes.seperateLaneLines()
+        # self.lanes.seperateLaneAreas()
 
         # our main detection window
         self.window = Tk()
@@ -111,7 +110,7 @@ class LaneViolation:
         generateSubtitleBar(window=self.window, title=option2, n_columns=3)
         self.additional_gui = AdditionalGUILane(self)
 
-        self.detectAndTrack()
+        threading.Thread(target=self.detectAndTrack).start()
 
         self.frame_count += 1
 
@@ -125,15 +124,33 @@ class LaneViolation:
 
         self.frame_count += 1
 
-        if self.frame_received:
+        if self.frame_received and not self.pause_frame:
             self.maskRoad()
 
             # Only start detection after n frames
             if self.frame_count > lane_violation_detection_start_after_n_frames:
-                self.tracker.yoloDetect()
-                self.tracker.deepSortTrack()
-                self.vehicles.register()
-                self.violation_info = self.checkViolation()
+                # self.tracker.yoloDetect()
+                # self.tracker.deepSortTrack()
+                # self.vehicles.register()
+                # self.violation_info = self.checkViolation(
+                self.curr_time = time.time()
+                self.violation_info = {
+                    'status': False,
+                    'types': [],
+                    'ids': [],
+                    'class_names': [],
+                    'violation_bbox': []
+                }
+                if (self.curr_time - self.start_time) > 1 and (self.curr_time - self.start_time) < 2:
+                    self.violation_info = {
+                        'status': True,
+                        'types': ["Oshin", "mero", "budi", "ho", "so",
+                                  "SURAJ", "aakha", "nalagam"],
+                        'ids': [5, 1, 2, 3, 4, 6, 7, 8],
+                        'class_names': ["Car", "Bus", "Truck", "Bike", "Car", "Car", "Car", "Car"],
+                        'violation_bbox': [(100, 100, 200, 200), (100, 100, 200, 200), (100, 100, 200, 200), (100, 100, 200, 200),
+                                           (100, 100, 200, 200), (100, 100, 200, 200), (100, 100, 200, 200), (100, 100, 200, 200)]
+                    }
                 if self.violation_info['status']:
                     print("Violation!!")
                     print(self.violation_info)
@@ -141,28 +158,27 @@ class LaneViolation:
                     print(self.violation_log)
                     self.showInGUI()
 
-        lanes_list = [self.lanes.left_lane_line1, self.lanes.left_lane_line2, self.lanes.right_lane_line1,
-                      self.lanes.right_lane_line2]
-        cv2.line(self.masked_frame, self.road_roi_left, self.road_roi_right, lane_color, lane_thickness)
-        for lane in lanes_list:
-            cv2.line(self.masked_frame, (lane['topx'], lane['topy']), (lane['bottomx'], lane['bottomy']),
-                     lane_color, lane_thickness)
+            lanes_list = [self.lanes.left_lane_line1, self.lanes.left_lane_line2, self.lanes.right_lane_line1,
+                          self.lanes.right_lane_line2]
+            cv2.line(self.masked_frame, self.road_roi_left, self.road_roi_right, lane_color, lane_thickness)
+            for lane in lanes_list:
+                cv2.line(self.masked_frame, (lane['topx'], lane['topy']), (lane['bottomx'], lane['bottomy']),
+                         lane_color, lane_thickness)
 
-        scale_percent = 60  # percent of original size
-        width = int(self.masked_frame.shape[1] * scale_percent / 100)
-        height = int(self.masked_frame.shape[0] * scale_percent / 100)
-        dim = (width, height)
+            scale_percent = 40  # percent of original size
+            width = int(self.masked_frame.shape[1] * scale_percent / 100)
+            height = int(self.masked_frame.shape[0] * scale_percent / 100)
+            dim = (width, height)
 
-        try:
-            # resize image
-            self.masked_frame = cv2.resize(self.masked_frame, dim, interpolation=cv2.INTER_AREA)
-            self.video_canvas.configure(width=width, height=height)
+            try:
+                # resize image
+                self.masked_frame = cv2.resize(self.masked_frame, dim, interpolation=cv2.INTER_AREA)
+                self.video_canvas.configure(width=width, height=height)
 
-        except:
-            messagebox.showerror("Ended or Failed", "Your video ended or failed!")
+            except:
+                messagebox.showerror("Ended or Failed", "Your video ended or failed!")
 
-
-        writeNewFrame(frame=self.masked_frame, detection_object=self)
+            writeNewFrame(frame=self.masked_frame, detection_object=self)
 
         self.window.after(lane_window_update_time, self.detectAndTrack)
 
@@ -279,10 +295,12 @@ class LaneViolation:
                     self.violation_info['violation_bbox'][i][3]),
                                    int(self.violation_info['violation_bbox'][i][0]):int(
                                        self.violation_info['violation_bbox'][i][2])]
-                save_path = lane_violation_img_save_directory + violation_save_name_prefix + str(
-                    self.violation_info['ids'][i]) + lane_violation_img_save_extension
+                save_path = lane_violation_img_save_directory + violation_save_name_prefix + \
+                            str(self.violation_info['ids'][i]) + lane_violation_img_save_extension
                 cv2.imwrite(save_path, violator_picture)
                 self.violation_log['pictures'].append(save_path)
+
+#                self.additional_gui.logUpdate(self.violation_log)
 
                 start_frame = self.video.cap.get(cv2.CAP_PROP_POS_FRAMES)
                 cap = cv2.VideoCapture(self.video.path)
@@ -304,4 +322,4 @@ class LaneViolation:
                 self.violation_log['video_proof_links'].append(video_save_path)
 
     def showInGUI(self):
-        self.additional_gui.showViolationFrame(self.violation_log)
+        threading.Thread(target=self.additional_gui.showViolationFrame, args=(self.violation_info,)).start()

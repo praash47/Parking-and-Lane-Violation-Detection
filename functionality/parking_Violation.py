@@ -202,12 +202,10 @@ class ParkingViolation:
         self.menu_bar.add_cascade(label=option_menu_title, menu=self.option_menu)
         self.option_menu.add_command(label=disable_yolo_option, command=self.yolo.disable)
 
-    def reset(self):  # NOT WORKING #
-        # TODO: Fix reset button
-        self.reset_violation_btn.destroy()
-        self.window.destroy()
-        self.window.quit()
+    def reset(self):
+        self.quitProgram()
 
+        # create a new object starting with video frame from that same point.
         self.new_object = 'Yes'
 
     def quitProgram(self):

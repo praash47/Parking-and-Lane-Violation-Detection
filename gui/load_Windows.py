@@ -37,10 +37,14 @@ class SubWindow:  # Window for Parking and Lane Violation LOAD WINDOW
                                                          ("all files", "*.*")
                                                      )
                                                      )
+
+        # object_create holds the main parking and lane violation objects.
         if self.option == option1:
             self.window.destroy()
             self.window.quit()
 
+            # this object_create contains info whether to create a new object
+            # after or not.
             object_create = ParkingViolation(self.video_path)
 
             while object_create.new_object == 'Yes':
@@ -52,7 +56,9 @@ class SubWindow:  # Window for Parking and Lane Violation LOAD WINDOW
         else:
             self.window.destroy()
             self.window.quit()
-            LaneViolation(self.video_path)
+            object_create = LaneViolation(self.video_path)
+
+        del object_create
 
 
 class ParkingViolationLoadWindow(SubWindow):

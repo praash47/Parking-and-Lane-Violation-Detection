@@ -8,6 +8,7 @@ class MainMenu:
         self.window = Tk()
         self.window.title("Main Menu - " + app_title)
         self.choice = None  # Main Menu Option Choice
+        self.exit = False
 
         generateTopBottomBar(window=self.window, title=app_title)  # from functions.py
 
@@ -25,6 +26,14 @@ class MainMenu:
         self.option2.grid(row=2, column=0, ipadx=option_inner_padding_x, ipady=option_inner_padding_y,
                           pady=option_outer_padding_y)
 
+        # EXIT #
+        self.option3 = Button(self.window, text="Exit", width=option_width, bg=option_color,
+                              activebackground=option_btn_active_color,
+                              command=self.exitProgram)
+        self.option3.grid(row=3, column=0, ipadx=option_inner_padding_x, ipady=option_inner_padding_y,
+                          pady=option_outer_padding_y)
+
+
         self.window.mainloop()
         self.switchLoadWindow()  # this part executes after window has been destroyed.
 
@@ -39,3 +48,8 @@ class MainMenu:
                 ParkingViolationLoadWindow()  # Proceed to functionality/parking_Violation.py
             else:
                 LaneViolationLoadWindow()  # Proceed to functionality/lane_Violation.py
+
+    def exitProgram(self):
+        self.window.destroy()
+        self.window.quit()
+        self.exit = True
