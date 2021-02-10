@@ -1,5 +1,6 @@
 # Third Party Modules ##
 import datetime
+import queue
 import threading
 import yolo.object_tracker as obtk
 
@@ -67,6 +68,8 @@ class LaneViolation:
             'pictures': [],
             'video_proof_links': []
         }
+        self.violation_queue = queue.Queue()
+
         self.start_time = time.time()
         self.startDetectionWindow()
         # generateTopBottomBar(window=self.detect_ask_window, title=self.detect_ask_window.title(),
@@ -144,18 +147,27 @@ class LaneViolation:
                 if (self.curr_time - self.start_time) > 1 and (self.curr_time - self.start_time) < 2:
                     self.violation_info = {
                         'status': True,
-                        'types': ["Oshin", "mero", "budi", "ho", "so",
-                                  "SURAJ", "aakha", "nalagam"],
+                        'types': ["Aashish", "Tamrakar", "is", "my", "name",
+                                  "so", "high", "that"],
                         'ids': [5, 1, 2, 3, 4, 6, 7, 8],
                         'class_names': ["Car", "Bus", "Truck", "Bike", "Car", "Car", "Car", "Car"],
                         'violation_bbox': [(100, 100, 200, 200), (100, 100, 200, 200), (100, 100, 200, 200), (100, 100, 200, 200),
                                            (100, 100, 200, 200), (100, 100, 200, 200), (100, 100, 200, 200), (100, 100, 200, 200)]
                     }
+                elif (self.curr_time - self.start_time) > 3 and (self.curr_time - self.start_time) < 5:
+                    self.violation_info = {
+                        'status': True,
+                        'types': ["Second", "Frame", "Aayo"],
+                        'ids': [14, 15, 16],
+                        'class_names': ["Car", "Bus", "Truck"],
+                        'violation_bbox': [(100, 100, 200, 200), (100, 100, 200, 200), (100, 100, 200, 200),]
+                    }
+                print(self.curr_time - self.start_time)
                 if self.violation_info['status']:
                     print("Violation!!")
                     print(self.violation_info)
                     self.logViolation()
-                    print(self.violation_log)
+                    self.putInQueue()
                     self.showInGUI()
 
             lanes_list = [self.lanes.left_lane_line1, self.lanes.left_lane_line2, self.lanes.right_lane_line1,
@@ -291,13 +303,14 @@ class LaneViolation:
                 self.violation_log['times'].append(current_time)
                 self.violation_log['types'].append(self.violation_info['types'][i])
 
-                violator_picture = self.masked_frame[int(self.violation_info['violation_bbox'][i][1]):int(
-                    self.violation_info['violation_bbox'][i][3]),
-                                   int(self.violation_info['violation_bbox'][i][0]):int(
-                                       self.violation_info['violation_bbox'][i][2])]
-                save_path = lane_violation_img_save_directory + violation_save_name_prefix + \
-                            str(self.violation_info['ids'][i]) + lane_violation_img_save_extension
-                cv2.imwrite(save_path, violator_picture)
+                # violator_picture = self.masked_frame[int(self.violation_info['violation_bbox'][i][1]):int(
+                #     self.violation_info['violation_bbox'][i][3]),
+                #                    int(self.violation_info['violation_bbox'][i][0]):int(
+                #                        self.violation_info['violation_bbox'][i][2])]
+                # save_path = lane_violation_img_save_directory + violation_save_name_prefix + \
+                #             str(self.violation_info['ids'][i]) + lane_violation_img_save_extension
+                # cv2.imwrite(save_path, violator_picture)
+                save_path = "C:\\Users\\im_re\\Desktop\\NCE074BCT001.jpg"
                 self.violation_log['pictures'].append(save_path)
 
 #                self.additional_gui.logUpdate(self.violation_log)
@@ -322,4 +335,13 @@ class LaneViolation:
                 self.violation_log['video_proof_links'].append(video_save_path)
 
     def showInGUI(self):
-        threading.Thread(target=self.additional_gui.showViolationFrame, args=(self.violation_info,)).start()
+        current_thread = self.violation_queue.get()
+        current_thread.start()
+        if not current_thread.isAlive():
+            print("new thread starting!")
+            current_thread = self.violation_queue.get()
+            current_thread.start()
+
+    def putInQueue(self):
+        t = threading.Thread(target=self.additional_gui.showViolationFrame, args=(self.violation_log,))
+        self.violation_queue.put(t)
