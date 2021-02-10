@@ -1,0 +1,179 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface version="1.0">
+  <object class="tk.Toplevel" id="log_window">
+    <property name="borderwidth">0</property>
+    <property name="geometry">480x240</property>
+    <property name="padx">10</property>
+    <property name="pady">10</property>
+    <property name="takefocus">true</property>
+    <property name="title" translatable="yes">Info for Vehicle ID </property>
+    <child>
+      <object class="tk.Canvas" id="vehicle_image">
+        <property name="background">#87bab4</property>
+        <property name="height">100</property>
+        <property name="relief">groove</property>
+        <property name="width">100</property>
+        <layout manager="grid">
+          <property name="propagate">True</property>
+        </layout>
+      </object>
+    </child>
+  </object>
+  <object class="tk.LabelFrame" id="log_window_info">
+    <property name="font">{Century Schoolbook} 14 {bold}</property>
+    <property name="height">225</property>
+    <property name="labelanchor">n</property>
+    <property name="padx">0</property>
+    <property name="pady">0</property>
+    <property name="takefocus">false</property>
+    <property name="text" translatable="yes">Culprit Info</property>
+    <property name="width">400</property>
+    <layout manager="grid">
+      <property name="column">2</property>
+      <property name="propagate">False</property>
+    </layout>
+    <child>
+      <object class="tk.Label" id="vehicle_id">
+        <property name="cursor">arrow</property>
+        <property name="font">{Yu Gothic Medium} 12 {}</property>
+        <property name="highlightcolor">#030505</property>
+        <property name="relief">ridge</property>
+        <property name="text" translatable="yes">Vehicle ID:</property>
+        <layout manager="grid">
+          <property name="column">0</property>
+          <property name="padx">5</property>
+          <property name="pady">2</property>
+          <property name="propagate">True</property>
+          <property name="sticky">w</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="tk.Label" id="vehicle_id_value">
+        <property name="font">{Yu Gothic Medium} 12 {}</property>
+        <property name="text" translatable="yes">1</property>
+        <layout manager="grid">
+          <property name="column">1</property>
+          <property name="padx">130</property>
+          <property name="propagate">True</property>
+          <property name="row">0</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="tk.Label" id="vehicle_type">
+        <property name="font">{Yu Gothic Medium} 12 {}</property>
+        <property name="relief">ridge</property>
+        <property name="text" translatable="yes">Vehicle Type:</property>
+        <layout manager="grid">
+          <property name="column">0</property>
+          <property name="padx">5</property>
+          <property name="pady">2</property>
+          <property name="propagate">True</property>
+          <property name="row">1</property>
+          <property name="sticky">w</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="tk.Label" id="vehicle_type_value">
+        <property name="font">{Yu Gothic Medium} 12 {}</property>
+        <property name="text" translatable="yes">Truck</property>
+        <layout manager="grid">
+          <property name="column">1</property>
+          <property name="padx">150</property>
+          <property name="propagate">True</property>
+          <property name="row">1</property>
+          <property name="sticky">e</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="tk.Label" id="violation_at">
+        <property name="font">{Yu Gothic Medium} 12 {}</property>
+        <property name="relief">ridge</property>
+        <property name="text" translatable="yes">Violation At:</property>
+        <layout manager="grid">
+          <property name="column">0</property>
+          <property name="padx">5</property>
+          <property name="pady">2</property>
+          <property name="propagate">True</property>
+          <property name="row">2</property>
+          <property name="sticky">w</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="tk.Label" id="violation_at_value">
+        <property name="font">{Yu Gothic Medium} 12 {}</property>
+        <property name="text" translatable="yes">10:27:52</property>
+        <layout manager="grid">
+          <property name="column">1</property>
+          <property name="padx">150</property>
+          <property name="propagate">True</property>
+          <property name="row">2</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="tk.Label" id="violation_type">
+        <property name="font">{Yu Gothic Medium} 12 {}</property>
+        <property name="relief">ridge</property>
+        <property name="text" translatable="yes">Violation Type:</property>
+        <layout manager="grid">
+          <property name="column">0</property>
+          <property name="padx">5</property>
+          <property name="pady">2</property>
+          <property name="propagate">True</property>
+          <property name="row">3</property>
+          <property name="sticky">w</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="tk.Label" id="violation_type_value">
+        <property name="font">{Yu Gothic Medium} 12 {}</property>
+        <property name="text" translatable="yes">Retrogress</property>
+        <layout manager="grid">
+          <property name="column">1</property>
+          <property name="padx">150</property>
+          <property name="propagate">True</property>
+          <property name="row">3</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="tk.Label" id="video_proof_link">
+        <property name="font">{Yu Gothic Medium} 12 {}</property>
+        <property name="relief">ridge</property>
+        <property name="text" translatable="yes">Video Proof Link:</property>
+        <layout manager="grid">
+          <property name="column">0</property>
+          <property name="padx">5</property>
+          <property name="pady">2</property>
+          <property name="propagate">True</property>
+          <property name="row">4</property>
+          <property name="sticky">w</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="tk.Label" id="video_proof_link_value">
+        <property name="cursor">hand2</property>
+        <property name="font">{Yu Gothic Medium} 12 {underline}</property>
+        <property name="foreground">#3064b1</property>
+        <property name="highlightcolor">#3064b1</property>
+        <property name="justify">left</property>
+        <property name="text" translatable="yes">violations/lane/violation-id-5.jpg</property>
+        <property name="wraplength">200</property>
+        <layout manager="grid">
+          <property name="column">1</property>
+          <property name="padx">30</property>
+          <property name="propagate">True</property>
+          <property name="row">4</property>
+          <property name="sticky">w</property>
+        </layout>
+      </object>
+    </child>
+  </object>
+</interface>
