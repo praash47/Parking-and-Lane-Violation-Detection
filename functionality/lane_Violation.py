@@ -17,6 +17,8 @@ import cv2
 
 
 global thumbnail
+global lock
+lock = threading.Lock()
 
 
 class LaneViolation:
@@ -44,7 +46,7 @@ class LaneViolation:
 
         # Lanes and Tracker initialization #
         self.masked_frame = None
-        # self.tracker = obtk.DetectorTracker(self)
+        self.tracker = obtk.DetectorTracker(self)
         self.lanes = Lanes(self)
 
         # ROI coordinates #
@@ -60,14 +62,8 @@ class LaneViolation:
 
         # Violation #
         self.violation_info = None
-        self.violation_log = {
-            'ids': [],
-            'class_names': [],
-            'times': [],
-            'types': [],
-            'pictures': [],
-            'video_proof_links': []
-        }
+        self.violation_log = []
+        self.violation_logged_ids = []
         self.violation_queue = queue.Queue()
 
         self.start_time = time.time()
@@ -132,40 +128,12 @@ class LaneViolation:
 
             # Only start detection after n frames
             if self.frame_count > lane_violation_detection_start_after_n_frames:
-                # self.tracker.yoloDetect()
-                # self.tracker.deepSortTrack()
-                # self.vehicles.register()
-                # self.violation_info = self.checkViolation(
-                self.curr_time = time.time()
-                self.violation_info = {
-                    'status': False,
-                    'types': [],
-                    'ids': [],
-                    'class_names': [],
-                    'violation_bbox': []
-                }
-                if (self.curr_time - self.start_time) > 1 and (self.curr_time - self.start_time) < 2:
-                    self.violation_info = {
-                        'status': True,
-                        'types': ["Aashish", "Tamrakar", "is", "my", "name",
-                                  "so", "high", "that"],
-                        'ids': [5, 1, 2, 3, 4, 6, 7, 8],
-                        'class_names': ["Car", "Bus", "Truck", "Bike", "Car", "Car", "Car", "Car"],
-                        'violation_bbox': [(100, 100, 200, 200), (100, 100, 200, 200), (100, 100, 200, 200), (100, 100, 200, 200),
-                                           (100, 100, 200, 200), (100, 100, 200, 200), (100, 100, 200, 200), (100, 100, 200, 200)]
-                    }
-                elif (self.curr_time - self.start_time) > 3 and (self.curr_time - self.start_time) < 5:
-                    self.violation_info = {
-                        'status': True,
-                        'types': ["Second", "Frame", "Aayo"],
-                        'ids': [14, 15, 16],
-                        'class_names': ["Car", "Bus", "Truck"],
-                        'violation_bbox': [(100, 100, 200, 200), (100, 100, 200, 200), (100, 100, 200, 200),]
-                    }
-                print(self.curr_time - self.start_time)
+                self.tracker.yoloDetect()
+                self.tracker.deepSortTrack()
+                self.vehicles.register()
+                self.violation_info = self.checkViolation()
+
                 if self.violation_info['status']:
-                    print("Violation!!")
-                    print(self.violation_info)
                     self.logViolation()
                     self.putInQueue()
                     self.showInGUI()
@@ -293,27 +261,32 @@ class LaneViolation:
         return violation
 
     def logViolation(self):
+        self.violation_log_batch = {
+            'ids': [],
+            'class_names': [],
+            'times': [],
+            'types': [],
+            'pictures': [],
+            'video_proof_links': []
+        }
         for i in range(len(self.violation_info['ids'])):
-            if self.violation_info['ids'][i] not in self.violation_log['ids']:
-                self.violation_log['ids'].append(self.violation_info['ids'][i])
-                self.violation_log['class_names'].append(self.violation_info['class_names'][i])
+            if self.violation_info['ids'][i] not in self.violation_logged_ids:
+                self.violation_log_batch['ids'].append(self.violation_info['ids'][i])
+                self.violation_log_batch['class_names'].append(self.violation_info['class_names'][i])
 
                 now = datetime.datetime.now()
                 current_time = now.strftime("%H:%M:%S")
-                self.violation_log['times'].append(current_time)
-                self.violation_log['types'].append(self.violation_info['types'][i])
+                self.violation_log_batch['times'].append(current_time)
+                self.violation_log_batch['types'].append(self.violation_info['types'][i])
 
-                # violator_picture = self.masked_frame[int(self.violation_info['violation_bbox'][i][1]):int(
-                #     self.violation_info['violation_bbox'][i][3]),
-                #                    int(self.violation_info['violation_bbox'][i][0]):int(
-                #                        self.violation_info['violation_bbox'][i][2])]
-                # save_path = lane_violation_img_save_directory + violation_save_name_prefix + \
-                #             str(self.violation_info['ids'][i]) + lane_violation_img_save_extension
-                # cv2.imwrite(save_path, violator_picture)
-                save_path = "C:\\Users\\im_re\\Desktop\\NCE074BCT001.jpg"
-                self.violation_log['pictures'].append(save_path)
-
-#                self.additional_gui.logUpdate(self.violation_log)
+                violator_picture = self.masked_frame[int(self.violation_info['violation_bbox'][i][1]):int(
+                    self.violation_info['violation_bbox'][i][3]),
+                                   int(self.violation_info['violation_bbox'][i][0]):int(
+                                       self.violation_info['violation_bbox'][i][2])]
+                save_path = lane_violation_img_save_directory + violation_save_name_prefix + \
+                            str(self.violation_info['ids'][i]) + lane_violation_img_save_extension
+                cv2.imwrite(save_path, violator_picture)
+                self.violation_log_batch['pictures'].append(save_path)
 
                 start_frame = self.video.cap.get(cv2.CAP_PROP_POS_FRAMES)
                 cap = cv2.VideoCapture(self.video.path)
@@ -332,16 +305,17 @@ class LaneViolation:
                 except:
                     print("Not enough frames for video output")
 
-                self.violation_log['video_proof_links'].append(video_save_path)
+                self.violation_log_batch['video_proof_links'].append(video_save_path)
+                self.violation_logged_ids.append(self.violation_info['ids'][i])
+        self.violation_log.append(self.violation_log_batch)
+        print(self.violation_log_batch)
 
     def showInGUI(self):
         current_thread = self.violation_queue.get()
         current_thread.start()
-        if not current_thread.isAlive():
-            print("new thread starting!")
-            current_thread = self.violation_queue.get()
-            current_thread.start()
 
     def putInQueue(self):
-        t = threading.Thread(target=self.additional_gui.showViolationFrame, args=(self.violation_log,))
+        global lock
+        t = threading.Thread(target=self.additional_gui.showViolationFrame, args=(self.violation_log_batch, lock, ))
         self.violation_queue.put(t)
+

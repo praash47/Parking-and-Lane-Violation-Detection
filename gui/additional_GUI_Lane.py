@@ -81,7 +81,8 @@ class AdditionalGUILane:
         self.recent_violation_frame.config(width='300')
         self.recent_violation_frame.grid(row=2, column=1)
 
-    def showViolationFrame(self, violation_log):
+    def showViolationFrame(self, violation_log, lock):
+        lock.acquire()
         log_in_loop = False
         for i in range(len(violation_log['ids'])):
             if violation_log['ids'][i] not in self.violation_recent_shown:
@@ -113,6 +114,7 @@ class AdditionalGUILane:
                 log_in_loop = True
         time.sleep(1)
         self.showNoneFrame()
+        lock.release()
 
     def logUpdate(self, log=None, log_updated=True):
         if log is not None and not log_updated:
@@ -131,6 +133,7 @@ class AdditionalGUILane:
 
         self.vehicle_image = tk.Canvas(self.log_window)
         self.vehicle_image.config(height='100', relief='groove', width='100')
+
         violator_image = cv2.imread(self.object.violation_log['pictures'][0])
         violator_image = cv2.resize(violator_image, (100, 100))
         global tkinter_readable_frame
