@@ -16,52 +16,64 @@ class Lanes:
     def __init__(self, detection_object):
         self.object = detection_object
         self.lanes_list = []
-        self.left_lane_line1 = {
-            'bottomx': 600,
-            'bottomy': 720,
-            'topx': 603,
-            'topy': 250
-        }
-        self.left_lane_line2 = {
-            'bottomx': 616,
-            'bottomy': 720,
-            'topx': 609,
-            'topy': 250
-        }
-        self.right_lane_line1 = {
-            'bottomx': 651,
-            'bottomy': 720,
-            'topx': 624,
-            'topy': 250
-        }
-        self.right_lane_line2 = {
-            'bottomx': 667,
-            'bottomy': 720,
-            'topx': 630,
-            'topy': 250
-        }
+        self.left_lane_line1 = None
+        self.left_lane_line2 = None
+        self.right_lane_line1 = None
+        self.right_lane_line2 = None
+        # self.left_lane_line1 = {
+        #     'bottomx': 600,
+        #     'bottomy': 720,
+        #     'topx': 603,
+        #     'topy': 250
+        # }
+        # self.left_lane_line2 = {
+        #     'bottomx': 616,
+        #     'bottomy': 720,
+        #     'topx': 609,
+        #     'topy': 250
+        # }
+        # self.right_lane_line1 = {
+        #     'bottomx': 651,
+        #     'bottomy': 720,
+        #     'topx': 624,
+        #     'topy': 250
+        # }
+        # self.right_lane_line2 = {
+        #     'bottomx': 667,
+        #     'bottomy': 720,
+        #     'topx': 630,
+        #     'topy': 250
+        # }
         self.hough_img = None
-        self.left_lane_area = {
-            'top_left': [296, 250],
-            'top_right': [603, 250],
-            'bottom_left': [0, 720],
-            'bottom_right': [600, 720]
-        }
-        self.right_lane_area = {
-            'top_left': [630, 250],
-            'top_right': [910, 250],
-            'bottom_left': [667,720],
-            'bottom_right': [1280, 720]
-        }
+        self.hough_crop_range_left = None
+        self.hough_crop_range_right = None
+        self.left_lane_area = None
+        self.right_lane_area = None
+        # self.left_lane_area = {
+        #     'top_left': [296, 250],
+        #     'top_right': [603, 250],
+        #     'bottom_left': [0, 720],
+        #     'bottom_right': [600, 720]
+        # }
+        # self.right_lane_area = {
+        #     'top_left': [630, 250],
+        #     'top_right': [910, 250],
+        #     'bottom_left': [667,720],
+        #     'bottom_right': [1280, 720]
+        # }
 
     def houghTransform(self):
         # Pre-processing for hough transform
         frame_width = int(self.object.video.width)
         frame_height = int(self.object.video.height)
         mid_x = int(frame_width / 2)
+
+        self.hough_crop_range_left = abs(self.hough_crop_range_left[0] - mid_x)
+        self.hough_crop_range_right = abs(self.hough_crop_range_right[0] - mid_x)
+
         self.hough_img = self.object.video.getThumbnail(non_tk=True)
-        hough_crop = self.hough_img[self.object.road_roi_left[1]: frame_height, mid_x - hough_crop_range_left: mid_x +
-                                                                   hough_crop_range_right]
+        hough_crop = self.hough_img[self.object.road_roi_left[1]: frame_height, mid_x - self.hough_crop_range_left: mid_x +
+                                                                   self.hough_crop_range_right]
         edges = cv2.Canny(hough_crop, canny_threshold1, canny_threshold2, apertureSize=canny_aperture_size)
         cv2.imshow("crop", hough_crop)
         self.hough(edges, mid_x)
@@ -74,8 +86,8 @@ class Lanes:
             lines = self.adjustCoordinates(lines)
             for line in lines:
                 x1, y1, x2, y2 = line[0], line[1], line[2], line[3]
-                rel_x1 = m - hough_crop_range_left + x1
-                rel_x2 = m - hough_crop_range_left + x2
+                rel_x1 = m - self.hough_crop_range_left + x1
+                rel_x2 = m - self.hough_crop_range_left + x2
                 rel_y1 = self.object.road_roi_left[1] + y1
                 rel_y2 = self.object.road_roi_left[1] + y2
                 self.lanes_list.append([rel_x1, rel_y1, rel_x2, rel_y2])
@@ -103,10 +115,10 @@ class Lanes:
             if y2 > y1:
                 tempx = line[0][0]
                 tempy = line[0][1]
-                line[0][0] = line[0][2]
-                line[0][1] = line[0][3]
-                line[0][2] = tempx
-                line[0][3] = tempy
+                line[0][0] = int(line[0][2])
+                line[0][1] = int(line[0][3])
+                line[0][2] = int(tempx)
+                line[0][3] = int(tempy)
             line = [line[0][0], line[0][1], line[0][2], line[0][3]]
             adjusted = np.append(adjusted, [line], axis=0)
         adjusted = np.delete(adjusted, 0, 0)
@@ -237,13 +249,13 @@ class Lanes:
         if left:
             top_left = [self.object.road_roi_left[0], self.object.road_roi_left[1]]
             top_right = [self.left_lane_line1['topx'], self.left_lane_line1['topy']]
-            bottom_left = [0, self.object.video.height]
+            bottom_left = [0, int(self.object.video.height)]
             bottom_right = [self.left_lane_line1['bottomx'], self.left_lane_line1['bottomy']]
         else:
             top_left = [self.right_lane_line2['topx'], self.right_lane_line2['topy']]
             top_right = [self.object.road_roi_right[0], self.object.road_roi_right[1]]
             bottom_left = [self.right_lane_line2['bottomx'], self.right_lane_line2['bottomy']]
-            bottom_right = [self.object.video.width, self.object.video.height]
+            bottom_right = [int(self.object.video.width), int(self.object.video.height)]
         return {'top_left': top_left, 'top_right': top_right, 'bottom_left': bottom_left, 'bottom_right': bottom_right}
 
     def showLaneAreas(self):

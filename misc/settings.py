@@ -216,8 +216,6 @@ lane_yolo_model_filename = 'yolo/model_data/mars-small128.pb'
 # | LANE PROCESSING |
 # | MODULE |
 # Hough Transform
-hough_crop_range_left = 110
-hough_crop_range_right = 0
 canny_threshold1 = 50
 canny_threshold2 = 150
 canny_aperture_size = 3

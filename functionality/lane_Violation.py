@@ -51,8 +51,11 @@ class LaneViolation:
 
         # ROI coordinates #
         self.roi = RegionOfInterest(self)
-        self.road_roi_left = (296, 250)  # road roi
-        self.road_roi_right = (910, 250)  # road roi
+
+        self.road_roi_left = None
+        self.road_roi_right = None
+        # self.road_roi_left = (296, 250)  # road roi
+        # self.road_roi_right = (910, 250)  # road roi
 
         # Vehicles Object initialization #
         self.vehicles = Vehicles(self)
@@ -88,11 +91,11 @@ class LaneViolation:
         self.detect_ask_window.destroy()
         self.detect_ask_window.quit()
 
-        # self.roiSpecification()
+        self.roiSpecification()
 
-        # self.lanes.houghTransform()
-        # self.lanes.seperateLaneLines()
-        # self.lanes.seperateLaneAreas()
+        self.lanes.houghTransform()
+        self.lanes.seperateLaneLines()
+        self.lanes.seperateLaneAreas()
 
         # our main detection window
         self.window = Tk()
@@ -193,17 +196,30 @@ class LaneViolation:
     def roiSpecification(self):
         # select rectangular area
         dim = cv2.selectROI(roi_select_road_window_title, self.video.getThumbnail(non_tk=True))
-        self.roi.x1, self.roi.y1, self.roi.x2, self.roi.y2 = dim[0], dim[1], dim[0] + dim[2], dim[1] + dim[3]
+        self.roi.x1, self.roi.y1, self.roi.x2, self.roi.y2 = int(dim[0]), int(dim[1]), int(dim[0] + dim[2]), \
+                                                             int(dim[1] + dim[3])
         self.roi.getRoiCoords(have_roi=True)
         cv2.destroyWindow(roi_select_road_window_title)
 
+        frame = self.video.getThumbnail(non_tk=True)[self.roi.y1:self.roi.y2, self.roi.x1:self.roi.x2]
+
         # select top left and top right of road.
-        dim = cv2.selectROI(roi_select_road_top_left_right_title,
-                            self.video.getThumbnail(non_tk=True)[self.roi.y1:self.roi.y2, self.roi.x1:self.roi.x2])
-        true_x = self.roi.x1 + dim[0]
-        true_y = self.roi.y1 + dim[1]
-        self.road_roi_left, self.road_roi_right = (true_x, true_y), (true_x + dim[2], true_y)
+        dim = cv2.selectROI(roi_select_road_top_left_right_title, frame)
+        true_x = int(self.roi.x1 + dim[0])
+        true_y = int(self.roi.y1 + dim[1])
+        self.road_roi_left, self.road_roi_right = (true_x, true_y), (int(true_x + dim[2]), true_y)
         cv2.destroyWindow(roi_select_road_top_left_right_title)
+
+        road_roi_drawn_frame = self.video.getThumbnail(non_tk=True)
+
+        cv2.line(road_roi_drawn_frame, self.road_roi_left, self.road_roi_right, (0, 255, 0), 2)
+
+        # crop range left and right select
+        dim = cv2.selectROI("Select Lane Lines Area", road_roi_drawn_frame)
+        true_x = int(self.roi.x1 + dim[0])
+        true_y = int(self.roi.y1 + dim[1])
+        self.lanes.hough_crop_range_left, self.lanes.hough_crop_range_right = (true_x, true_y),\
+                                                                              (int(true_x + dim[2]), int(true_y + dim[3]))
 
     def maskRoad(self):
         mask_vertices = np.array([[
