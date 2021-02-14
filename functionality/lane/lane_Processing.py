@@ -259,8 +259,7 @@ class Lanes:
         return {'top_left': top_left, 'top_right': top_right, 'bottom_left': bottom_left, 'bottom_right': bottom_right}
 
     def showLaneAreas(self):
-        # TODO: To test
-        # This function is responsible for showing seperated lane areas ##
+-1        # This function is responsible for showing seperated lane areas ##
         left_lane_pts = np.array([
             self.left_lane_area['top_left'], self.left_lane_area['top_right'],
             self.left_lane_area['bottom_right'], self.left_lane_area['bottom_left']],
