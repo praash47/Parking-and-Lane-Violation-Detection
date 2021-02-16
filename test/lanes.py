@@ -111,7 +111,7 @@ while(cap.isOpened()):
 
     color = (255, 255, 0)    
     frame = cv2.rectangle(frame, start_point_rect, end_point_rect, color, thickness)
-    cv2.imshow('frame',frame)
+    ('frame',frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 cap.release()

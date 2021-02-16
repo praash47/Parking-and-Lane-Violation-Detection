@@ -75,7 +75,7 @@ class Lanes:
         hough_crop = self.hough_img[self.object.road_roi_left[1]: frame_height, mid_x - self.hough_crop_range_left: mid_x +
                                                                    self.hough_crop_range_right]
         edges = cv2.Canny(hough_crop, canny_threshold1, canny_threshold2, apertureSize=canny_aperture_size)
-        cv2.imshow("crop", hough_crop)
+        ("crop", hough_crop)
         self.hough(edges, mid_x)
 
     def hough(self, edges, m):
@@ -152,7 +152,7 @@ class Lanes:
             for lane in lanes_list:
                 cv2.line(self.hough_img, (lane['topx'], lane['topy']), (lane['bottomx'], lane['bottomy']),
                          lane_color, lane_thickness)
-            cv2.imshow('hough after extension', self.hough_img)
+            ('hough after extension', self.hough_img)
         else:
             messagebox.showwarning(title="Not Enough Lines By Hough",
                                    message="There is not enough lines by hough. Selecting ROI properly may work.")
@@ -279,4 +279,4 @@ class Lanes:
         #                                 lane_text_font,
         #                                 lane_text_font_scale, left_lane_color, lane_text_thickness,
         #                                 lane_text_line_type)
-        cv2.imshow("after lanes area seperation", self.hough_img)
+        ("after lanes area seperation", self.hough_img)

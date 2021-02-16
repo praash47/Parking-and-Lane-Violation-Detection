@@ -102,7 +102,7 @@ while(cap.isOpened()):
         print("touching or crossed")
     
     frame = cv2.rectangle(frame, start_point_rect, end_point_rect, color, thickness)
-    cv2.imshow('frame',frame)
+    ('frame',frame)
     bbox[0] += 1
     bbox[2] += 1
     if cv2.waitKey(1) & 0xFF == ord('q'):

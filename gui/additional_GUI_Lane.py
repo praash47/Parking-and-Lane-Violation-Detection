@@ -129,12 +129,12 @@ class AdditionalGUILane:
         violation = self.violation_log.item(self.violation_log.selection())
         self.createLogInfoWindow()
 
-        self.log_window.title('Info for Vehicle ID: ' + violation['text'])
+        self.log_window.title('Info for Vehicle ID: ' + str(violation['values'][0]))
 
         self.vehicle_image = tk.Canvas(self.log_window)
         self.vehicle_image.config(height='100', relief='groove', width='100')
 
-        violator_image = cv2.imread(self.object.violation_log['pictures'][0])
+        violator_image = cv2.imread(self.extractLocation(id=int(violation['values'][0])))
         violator_image = cv2.resize(violator_image, (100, 100))
         global tkinter_readable_frame
         tkinter_readable_frame = ImageTk.PhotoImage(Image.fromarray(violator_image))
@@ -193,6 +193,22 @@ class AdditionalGUILane:
             self.log_window.geometry('540x250')
 
     def videoPlay(self, event):
+        violation = self.violation_log.item(self.violation_log.selection())
         path = os.getcwd()
-        path += "\\violations\\lane\\videos\\violation-id-8.mp4"
+        path += '/' + self.extractLocation(id=int(violation['values'][0]), video=True)
         os.startfile(path)
+
+    def extractLocation(self, id=None, video=False):
+        print(id)
+        violation_log_len = len(self.object.violation_log)
+
+        for i in range(violation_log_len):
+            batch_len = len(self.object.violation_log[i])
+
+            for j in range(batch_len):
+                if self.object.violation_log[i]['ids'][j] == id:
+                    if not video:
+                        return self.object.violation_log[i]['pictures'][j]
+                    else:
+                        return self.object.violation_log[i]['video_proof_links'][j]
+

@@ -314,7 +314,7 @@ class LaneViolation:
                                       (self.masked_frame.shape[1], self.masked_frame.shape[0]))
                 try:
                     n = 0
-                    while n < 10:
+                    while n < 20:
                         _, frame = cap.read()
                         out.write(frame)
                         n += 1

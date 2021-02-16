@@ -7,3 +7,6 @@ matplotlib
 easydict
 pillow
 playsound
+
+numpy~=1.18.5
+scipy~=1.4.1

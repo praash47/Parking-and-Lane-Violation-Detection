@@ -94,9 +94,9 @@ height = img.shape[0]
 crop_x1 = mid_x-65
 crop_x2 = mid_x+50
 crop_image=img[0:height,crop_x1:crop_x2]
-cv2.imshow("crop",crop_image)
+("crop",crop_image)
 edges=cv2.Canny(crop_image,50,150,apertureSize=3)
-cv2.imshow("canny",edges)
+("canny",edges)
 lines=cv2.HoughLinesP(edges,1,np.pi/180,100,minLineLength=100,maxLineGap=10)
 lines_list = []
 for index, line in enumerate(lines):
@@ -106,7 +106,7 @@ for index, line in enumerate(lines):
     print(mid_x-65+x1, y1, mid_x-65+x2, y2)
     lines_list.append([mid_x-65+x1,y1,mid_x-65+x2,y2])
 
-cv2.imshow("before extend image",img)
+("before extend image",img)
 
 left_lane1, left_lane2, right_lane1, right_lane2 = seperateLanes(lines_list)
 print(left_lane1, left_lane2, right_lane1, right_lane2)
@@ -124,7 +124,7 @@ print(left_lane1, left_lane2, right_lane1, right_lane2)
 # for lane in lanes_list:
 #     cv2.line(img2,(lane[0], lane[1]),(lane[2],lane[3]),(0,255,0),1)
 #
-# cv2.imshow("after extend image",img2)
+# ("after extend image",img2)
 
 dy1 = abs(right_lane1[3]-right_lane1[1])
 dx1 = abs(right_lane1[2]-right_lane1[0])
@@ -144,7 +144,7 @@ bottom3 = extendLine(left_lane2, dy3, dx3, height, up=False)
 cv2.line(img, top3, bottom3, (255, 0, 255), 1)
 print(top3)
 
-cv2.imshow("after extend image",img)
+("after extend image",img)
 
 # start_point_rect = (bbox[0], bbox[1])
 # end_point_rect = (bbox[2], bbox[3])
