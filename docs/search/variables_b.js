@@ -1,0 +1,21 @@
+var searchData=
+[
+  ['object_738',['object',['../classadditional___g_u_i___lane_1_1_additional_g_u_i_lane.html#ad03408aabe16bb53c780fae6cf3910f9',1,'additional_GUI_Lane.AdditionalGUILane.object()'],['../classadditional___g_u_i___parking_1_1_additional_g_u_i_parking.html#ad03408aabe16bb53c780fae6cf3910f9',1,'additional_GUI_Parking.AdditionalGUIParking.object()'],['../classdetector___tracking_1_1_detector_tracker.html#ad03408aabe16bb53c780fae6cf3910f9',1,'detector_Tracking.DetectorTracker.object()'],['../classlane___processing_1_1_lanes.html#ad03408aabe16bb53c780fae6cf3910f9',1,'lane_Processing.Lanes.object()'],['../classroi_1_1_region_of_interest.html#ad03408aabe16bb53c780fae6cf3910f9',1,'roi.RegionOfInterest.object()'],['../classvehicles_1_1_vehicles.html#ad03408aabe16bb53c780fae6cf3910f9',1,'vehicles.Vehicles.object()'],['../classyolo_1_1_y_o_l_o.html#ad03408aabe16bb53c780fae6cf3910f9',1,'yolo.YOLO.object()']]],
+  ['object_5ftrack_5fcount_739',['object_track_count',['../classobject__tracker_1_1_detector_tracker.html#a88b6b9c110160c5f4bea777425860b4e',1,'object_tracker::DetectorTracker']]],
+  ['option_740',['option',['../classload___windows_1_1_sub_window.html#a3cfe71f40b244562d3665516c3934c06',1,'load_Windows::SubWindow']]],
+  ['option1_741',['option1',['../classmain___menu_1_1_main_menu.html#a4064d1704a7770bb18c7a611e259d964',1,'main_Menu.MainMenu.option1()'],['../namespacevariables.html#ae8653495d1861c776c7d66caf6bdcf49',1,'variables.option1()']]],
+  ['option2_742',['option2',['../classmain___menu_1_1_main_menu.html#acff3bd1e5a1e796bf63cc3c816321271',1,'main_Menu.MainMenu.option2()'],['../namespacevariables.html#a7557e5a4a182953fa8db07d0e2e47f83',1,'variables.option2()']]],
+  ['option3_743',['option3',['../classmain___menu_1_1_main_menu.html#a192e1f2a11ab3435fd34317b3d27384b',1,'main_Menu::MainMenu']]],
+  ['option_5fbtn_5factive_5fcolor_744',['option_btn_active_color',['../namespacesettings.html#a7015dde87982cb9d01eaa32ad76d4534',1,'settings']]],
+  ['option_5fcolor_745',['option_color',['../namespacesettings.html#ac5352df9cbdc6134240620d1249b7d58',1,'settings']]],
+  ['option_5finner_5fpadding_5fx_746',['option_inner_padding_x',['../namespacesettings.html#aee6c0b55341f9fe6f14a4c1069040c2f',1,'settings']]],
+  ['option_5finner_5fpadding_5fy_747',['option_inner_padding_y',['../namespacesettings.html#aa020e5a44313c39d9e66a133b886cc93',1,'settings']]],
+  ['option_5fmenu_748',['option_menu',['../classparking___violation_1_1_parking_violation.html#a92800533c70278041c22f9761a234fcf',1,'parking_Violation::ParkingViolation']]],
+  ['option_5fmenu_5ftitle_749',['option_menu_title',['../namespacevariables.html#ac38b9ff5d8ecdf37709753cfd246bcb6',1,'variables']]],
+  ['option_5fouter_5fpadding_5fy_750',['option_outer_padding_y',['../namespacesettings.html#a24eab710df2b2045232e01ecad82f24f',1,'settings']]],
+  ['option_5fwidth_751',['option_width',['../namespacesettings.html#a6e59d5adf2d936cf9913524f19da1be0',1,'settings']]],
+  ['original_5fh_752',['original_h',['../classobject__tracker_1_1_detector_tracker.html#aa4d47d366fc2fea2ececb53a14af7b00',1,'object_tracker::DetectorTracker']]],
+  ['original_5fw_753',['original_w',['../classobject__tracker_1_1_detector_tracker.html#afb11ada4e21348e47e8b1036708b1c80',1,'object_tracker::DetectorTracker']]],
+  ['output_5fdetails_754',['output_details',['../classobject__tracker_1_1_detector_tracker.html#af9262e09d0b694ddc51ef400497f7fc7',1,'object_tracker::DetectorTracker']]],
+  ['outputs_755',['outputs',['../classyolo_1_1_y_o_l_o.html#af8d743b78404b120589eca8c77c1c2a9',1,'yolo::YOLO']]]
+];
