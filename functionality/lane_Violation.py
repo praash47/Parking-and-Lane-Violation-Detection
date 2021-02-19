@@ -1,23 +1,21 @@
-# Third Party Modules ##
+# System Modules ##
 import datetime
 import queue
-import threading
-import yolo.object_tracker as obtk
 
 # Local Modules ##
-from functionality.lane.vehicles import *
+import yolo.object_tracker as obtk
 from functionality.lane.lane_Processing import *
 from functionality.lane.lane_Violation_Logic import *
+from functionality.lane.vehicles import *
+from functionality.roi import *
 from functionality.video import *
 from gui.additional_GUI_Lane import *
-from functionality.roi import *
+from gui.confirm_Detect import ConfirmDetect
 from misc.settings import *
 from misc.variables import *
-import cv2
 
-
-global thumbnail
-global lock
+global thumbnail  # tkinter bug for needing to declare global
+global lock  # lock for passing through multiple threads, needs to be global to work
 lock = threading.Lock()
 
 
@@ -54,8 +52,6 @@ class LaneViolation:
 
         self.road_roi_left = None
         self.road_roi_right = None
-        # self.road_roi_left = (296, 250)  # road roi
-        # self.road_roi_right = (910, 250)  # road roi
 
         # Vehicles Object initialization #
         self.vehicles = Vehicles(self)
@@ -63,39 +59,48 @@ class LaneViolation:
         # Frame number counter #
         self.frame_count = 0
 
-        # Violation #
-        self.violation_info = None
-        self.violation_log = []
-        self.violation_logged_ids = []
-        self.violation_queue = queue.Queue()
+        # Violation Detection Initializations #
+        self.violation_info = None  # violation_info consists of violations that occur in the current frame.
+        self.violation_log = []  # violation log is collection of log batches (a batch is equal to one violation_info)
+        self.violation_log_batch = None  # violation log batch is a batch made out of violation info, whose multiple
+        # instances make violation_log
+        self.violation_logged_ids = []  # ids which have already been placed in violation log
+        self.violation_queue = queue.Queue()  # queue for threads for each log batch
 
-        self.start_time = time.time()
-        self.startDetectionWindow()
-        # generateTopBottomBar(window=self.detect_ask_window, title=self.detect_ask_window.title(),
-        #                      bottom_row=lane_window_bottom_row)
-        # generateSubtitleBar(window=self.detect_ask_window, title='Confirm Detect?')
+        generateTopBottomBar(window=self.detect_ask_window, title=self.detect_ask_window.title(),
+                             bottom_row=lane_window_bottom_row)
+        generateSubtitleBar(window=self.detect_ask_window, title='Confirm Detect?')
 
         # confirm detect window is popped by this
-        # ConfirmDetect(window=self.detect_ask_window, video=self.video, option=option1)
+        ConfirmDetect(window=self.detect_ask_window, video=self.video)
 
-        # detect_btn_font = tkFont.Font(family=detect_btn_font_family, size=detect_btn_font_size)
-        # detect_btn = Button(self.detect_ask_window, text="Detect", bg=detect_btn_color,
-        #                     activebackground=detect_btn_active_color,
-        #                     command=self.startDetectionWindow, font=detect_btn_font)
-        # detect_btn.grid(row=4, column=0, ipadx=load_video_inner_padding_x, ipady=load_video_inner_padding_y,
-        #                 pady=load_video_outer_padding_y)
+        detect_btn_font = tkFont.Font(family=detect_btn_font_family, size=detect_btn_font_size)
+        detect_btn = Button(self.detect_ask_window, text="Detect", bg=detect_btn_color,
+                            activebackground=detect_btn_active_color,
+                            command=self.startDetectionWindow, font=detect_btn_font)
+        detect_btn.grid(row=4, column=0, ipadx=load_video_inner_padding_x, ipady=load_video_inner_padding_y,
+                        pady=load_video_outer_padding_y)
 
-        # self.detect_ask_window.mainloop()
+        self.startDetectionWindow()
+
+        self.detect_ask_window.mainloop()
 
     def startDetectionWindow(self):
+        """
+        responsible for starting the detection window
+        """
         self.detect_ask_window.destroy()
         self.detect_ask_window.quit()
 
+        # First, we specify three region of interests
         self.roiSpecification()
 
+        # we apply hough transform and then:
+        # 1. separate lane lines (placing top and bottom co-ordinate values of four lane lines)
+        # 2. separate lane areas (placing the top left, right and bottom left & right for two lane areas)
         self.lanes.houghTransform()
-        self.lanes.seperateLaneLines()
-        self.lanes.seperateLaneAreas()
+        self.lanes.separateLaneLines()
+        self.lanes.separateLaneAreas()
 
         # our main detection window
         self.window = Tk()
@@ -110,8 +115,13 @@ class LaneViolation:
 
         generateTopBottomBar(window=self.window, title=app_title, bottom_row=lane_window_bottom_row, n_columns=3)
         generateSubtitleBar(window=self.window, title=option2, n_columns=3)
+
+        # Creation of Recent Violation Section and Violation Log Section
         self.additional_gui = AdditionalGUILane(self)
 
+        # run detect and track in another thread, for optimum performance.
+        # if it is threaded, it is expected that video processing will take in one frame of cpu and interactions with
+        # GUI (eg. pressing button, clicking on menu bar) will run in next core for smooth performance.
         threading.Thread(target=self.detectAndTrack).start()
 
         self.frame_count += 1
@@ -119,38 +129,41 @@ class LaneViolation:
         self.window.mainloop()
 
     def detectAndTrack(self):
-        # Our main looping function
+        """
+        our main looping function, called every 10 ms.
+        """
         self.frame_received, self.frame = self.updateFrame()
-
-        self.roi.draw()
 
         self.frame_count += 1
 
         if self.frame_received and not self.pause_frame:
+            # Obtain a mask, for operation of YOLO and deep sort on that masked frame.
             self.maskRoad()
+            self.lanes.showLaneLines()
 
             # Only start detection after n frames
+            # reason: some of the previous frames data is required for lane violation detection.
             if self.frame_count > lane_violation_detection_start_after_n_frames:
+                # Use yolo detection then, apply deep sort tracker in the frame
                 self.tracker.yoloDetect()
                 self.tracker.deepSortTrack()
+
+                # Register the vehicle into the
                 self.vehicles.register()
+
+                # Retrieve the violation info in the current frame
                 self.violation_info = self.checkViolation()
 
+                # If in the current frame, if violation has occur then
                 if self.violation_info['status']:
+                    # Log that violation, put the batch thread in the queue and show in GUI that thread.
                     self.logViolation()
                     self.putInQueue()
                     self.showInGUI()
 
-            lanes_list = [self.lanes.left_lane_line1, self.lanes.left_lane_line2, self.lanes.right_lane_line1,
-                          self.lanes.right_lane_line2]
-            cv2.line(self.masked_frame, self.road_roi_left, self.road_roi_right, lane_color, lane_thickness)
-            for lane in lanes_list:
-                cv2.line(self.masked_frame, (lane['topx'], lane['topy']), (lane['bottomx'], lane['bottomy']),
-                         lane_color, lane_thickness)
-
-            scale_percent = 40  # percent of original size
-            width = int(self.masked_frame.shape[1] * scale_percent / 100)
-            height = int(self.masked_frame.shape[0] * scale_percent / 100)
+            # scale down the video for display on screen
+            width = int(self.masked_frame.shape[1] * video_scale_percent / 100)
+            height = int(self.masked_frame.shape[0] * video_scale_percent / 100)
             dim = (width, height)
 
             try:
@@ -163,9 +176,17 @@ class LaneViolation:
 
             writeNewFrame(frame=self.masked_frame, detection_object=self)
 
+        # call detectAndTrack after 10 ms.
         self.window.after(lane_window_update_time, self.detectAndTrack)
 
     def updateFrame(self):
+        """
+        This function fetches the next frame.
+
+        :return:
+        frame_received - boolean
+        frame - numpy image frame
+        """
         # try to open the video
         if self.video.cap.isOpened():
             # if pause_frame has been set, then to continue from paused frame.
@@ -194,13 +215,18 @@ class LaneViolation:
             return None, None
 
     def roiSpecification(self):
+        """
+        select three region of interests, required for lane violation module
+        """
         # select rectangular area
         dim = cv2.selectROI(roi_select_road_window_title, self.video.getThumbnail(non_tk=True))
         self.roi.x1, self.roi.y1, self.roi.x2, self.roi.y2 = int(dim[0]), int(dim[1]), int(dim[0] + dim[2]), \
                                                              int(dim[1] + dim[3])
-        self.roi.getRoiCoords(have_roi=True)
+        self.roi.getRoiCoords(have_roi=True)  # sometimes, we would want to draw this selected rectangular area into the
+        # screen, it is for the very purpose.
         cv2.destroyWindow(roi_select_road_window_title)
 
+        # crop the frame
         frame = self.video.getThumbnail(non_tk=True)[self.roi.y1:self.roi.y2, self.roi.x1:self.roi.x2]
 
         # select top left and top right of road.
@@ -210,18 +236,29 @@ class LaneViolation:
         self.road_roi_left, self.road_roi_right = (true_x, true_y), (int(true_x + dim[2]), true_y)
         cv2.destroyWindow(roi_select_road_top_left_right_title)
 
+        # draw line on frame, for selection ease of road roi top left and top right
         road_roi_drawn_frame = self.video.getThumbnail(non_tk=True)
-
         cv2.line(road_roi_drawn_frame, self.road_roi_left, self.road_roi_right, (0, 255, 0), 2)
 
-        # crop range left and right select
+        # hough crop range left and right select
         dim = cv2.selectROI("Select Lane Lines Area", road_roi_drawn_frame)
+        # transformation of co-ordinates into larger cropped rectangular area co-ordinates.
         true_x = int(self.roi.x1 + dim[0])
         true_y = int(self.roi.y1 + dim[1])
-        self.lanes.hough_crop_range_left, self.lanes.hough_crop_range_right = (true_x, true_y),\
-                                                                              (int(true_x + dim[2]), int(true_y + dim[3]))
+        self.lanes.hough_crop_range_left, self.lanes.hough_crop_range_right = (true_x, true_y), \
+                                                                              (int(true_x + dim[2]),
+                                                                               int(true_y + dim[3]))
 
     def maskRoad(self):
+        """
+        masks out the road by using
+        1. road roi left
+        2. road roi right
+        3. left lane area bottom left and right
+        4. right lane area bottom left and right
+
+        stores the mask in the self.masked_frame
+        """
         mask_vertices = np.array([[
             self.road_roi_left,
             self.road_roi_right,
@@ -235,22 +272,28 @@ class LaneViolation:
         self.masked_frame = cv2.bitwise_and(self.frame, mask)
 
     def menuBar(self):
+        """
+        generates the menu-bar at the top of detection window.
+        """
         # FILE MENU *
         file_menu = Menu(self.menu_bar, tearoff=False)
         self.menu_bar.add_cascade(label="File", menu=file_menu)
         file_menu.add_command(label="Exit", command=self.quitProgram)
 
     def quitProgram(self):
+        """
+        this function destroys the detection window.
+        """
         self.window.destroy()
         self.window.quit()
 
     def checkViolation(self):
         """
         Looks for lane and retrogress violation.
+        violation['status'] is True if violation occur.
 
         :return: violation dictionary
         """
-        # TODO: to test
         violation = {
             'status': False,
             'types': [],
@@ -258,15 +301,19 @@ class LaneViolation:
             'class_names': [],
             'violation_bbox': []
         }
+        # For each vehicle in vehicles in scene
         for vehicle_object in self.vehicles.vehicles_in_scene['objects']:
-            print("checking for id " + str(vehicle_object.id))
+            # First, check location of the vehicle
             where_is_vehicle = checkVehicleLocation(self, vehicle_object)
+            # If vehicle is overlapping lane lines
             if where_is_vehicle == "Overlapping Lane Lines":
+                # Make status true and append it's details onto the violation dictionary
                 violation['status'] = True
                 violation['types'].append("Lane Cross")
                 violation['ids'].append(vehicle_object.id)
                 violation['class_names'].append(vehicle_object.class_name)
                 violation['violation_bbox'].append(vehicle_object.curr_bbox)
+            # If retrogress check function returns true, then retrogress is appended
             elif checkRetrogress(self, vehicle_object, where_is_vehicle):
                 violation['status'] = True
                 violation['types'].append("Retrogress")
@@ -277,6 +324,9 @@ class LaneViolation:
         return violation
 
     def logViolation(self):
+        """
+        Creates a log batch and appends it to violation log.
+        """
         self.violation_log_batch = {
             'ids': [],
             'class_names': [],
@@ -286,15 +336,18 @@ class LaneViolation:
             'video_proof_links': []
         }
         for i in range(len(self.violation_info['ids'])):
+            # If that id is not in already violation performed ids; to prevent duplicates of violation
             if self.violation_info['ids'][i] not in self.violation_logged_ids:
                 self.violation_log_batch['ids'].append(self.violation_info['ids'][i])
                 self.violation_log_batch['class_names'].append(self.violation_info['class_names'][i])
 
+                # Get current time
                 now = datetime.datetime.now()
                 current_time = now.strftime("%H:%M:%S")
                 self.violation_log_batch['times'].append(current_time)
                 self.violation_log_batch['types'].append(self.violation_info['types'][i])
 
+                # Write picture to directory and also save it's saved path
                 violator_picture = self.masked_frame[int(self.violation_info['violation_bbox'][i][1]):int(
                     self.violation_info['violation_bbox'][i][3]),
                                    int(self.violation_info['violation_bbox'][i][0]):int(
@@ -304,6 +357,7 @@ class LaneViolation:
                 cv2.imwrite(save_path, violator_picture)
                 self.violation_log_batch['pictures'].append(save_path)
 
+                # Write video to directory and also save it's saved path
                 start_frame = self.video.cap.get(cv2.CAP_PROP_POS_FRAMES)
                 cap = cv2.VideoCapture(self.video.path)
                 cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
@@ -314,24 +368,32 @@ class LaneViolation:
                                       (self.masked_frame.shape[1], self.masked_frame.shape[0]))
                 try:
                     n = 0
-                    while n < 20:
+                    # write n frames
+                    while n < n_output_violation_frames:
                         _, frame = cap.read()
                         out.write(frame)
                         n += 1
                 except:
                     print("Not enough frames for video output")
-
                 self.violation_log_batch['video_proof_links'].append(video_save_path)
+
+                # Write the current id into logged ids
                 self.violation_logged_ids.append(self.violation_info['ids'][i])
+        # Appending the log batch into the violation log.
         self.violation_log.append(self.violation_log_batch)
-        print(self.violation_log_batch)
 
     def showInGUI(self):
+        """
+        get thread from the queue one at a time and start it
+        """
         current_thread = self.violation_queue.get()
         current_thread.start()
 
     def putInQueue(self):
+        """
+        puts each log batch thread into the queue and keep it in pending while one sets the lock and uses recent
+        violation. pass lock with the log batch.
+        """
         global lock
-        t = threading.Thread(target=self.additional_gui.showViolationFrame, args=(self.violation_log_batch, lock, ))
+        t = threading.Thread(target=self.additional_gui.showViolationFrame, args=(self.violation_log_batch, lock,))
         self.violation_queue.put(t)
-

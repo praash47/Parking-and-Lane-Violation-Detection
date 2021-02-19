@@ -1,11 +1,10 @@
 # System Modules ##
 import os
+import cv2
 
 # Third Party Modules ##
-import cv2
 import numpy as np
 from tkinter import *
-
 
 # -----------------------------------------------
 # GLOBAL SETTINGS
@@ -20,6 +19,7 @@ desired_objects = [
     "truck",
     "train"
 ]
+video_scale_percent = 40
 
 # Default #
 theme_bg_color = "Blue"
@@ -234,7 +234,7 @@ lane_text_font_scale = 2
 lane_text_thickness = 1
 lane_text_padding = 10
 
-# Lane Seperation Area Showing
+# Lane Separation Area Showing
 lane_area_polygon_join = True
 left_lane_color = (255, 0, 255)
 right_lane_color = (255, 0, 255)
@@ -246,3 +246,4 @@ lane_violation_img_save_extension = ".jpg"
 
 lane_violation_vid_save_directory = "violations/lane/videos/"
 lane_violation_vid_save_extension = ".mp4"
+n_output_violation_frames = 20

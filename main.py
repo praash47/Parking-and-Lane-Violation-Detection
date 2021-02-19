@@ -1,5 +1,7 @@
 # Local Modules ##
 from gui.main_Menu import *
+
+# Third Party Modules ##
 from absl import app
 
 
@@ -11,6 +13,7 @@ def main(_argv):
     while not main_menu.exit:
         main_menu = MainMenu()
 
+    # delete main menu object
     del main_menu
 
 

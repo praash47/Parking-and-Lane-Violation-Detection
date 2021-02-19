@@ -1,10 +1,12 @@
+"""
+Utility functions required for the program
+"""
 # Third Party Modules ##
-from tkinter import *
 import tkinter.font as tkFont
 
+from misc.settings import *
 # Local Module Imports ##
 from misc.variables import *
-from misc.settings import *
 
 # Problem Creating Modules #
 from PIL import ImageTk, Image
@@ -14,8 +16,14 @@ global tkinter_readable_frame
 
 
 def generateTopBottomBar(window=None, title=app_title, bottom_row=4, n_columns=1):  # bottom_row specifies
-    # where the Bottom Bar lies. (required for tkinter), n_columns allows us to add multiple columns in
-    # middle section of our program.
+    """
+    Generates a top bar with title text at the top of the window and bottom bar at the bottom of the window.
+
+    :param window: Window in which to generate
+    :param title: title of the top bar
+    :param bottom_row: to generate bottom bar in designated row
+    :param n_columns: to span the bar over multiple columns
+    """
 
     # The bar that resides on top and bottom of each window
     top_font_style = tkFont.Font(family=top_font_family, size=top_font_size)
@@ -35,7 +43,15 @@ def generateTopBottomBar(window=None, title=app_title, bottom_row=4, n_columns=1
                               ipadx=top_bottom_inner_padding_x, ipady=top_bottom_inner_padding_y)
 
 
-def generateSubtitleBar(window="", title="", n_columns=1):  # n_columns sames as top-bottom bar
+def generateSubtitleBar(window="", title="", n_columns=1):
+    """
+    Generates a subtitle bar with title under the title bar
+
+    :param window: window to generate the subtitle bar on
+    :param title: title of the subtitle
+    :param n_columns: to span the bar over multiple columns
+    """
+    # n_columns sames as top-bottom bar
     # The bar that resides below the top bar
     window.subtitle_label = Label(window, text=title, font=subtitle_font_size, bg=subtitle_bg_color,
                                   fg=subtitle_text_color, activebackground=theme_bg_color)
@@ -44,6 +60,12 @@ def generateSubtitleBar(window="", title="", n_columns=1):  # n_columns sames as
 
 
 def writeNewFrame(frame, detection_object):
+    """
+    Writes opencv frame to the video canvas
+
+    :param frame: opencv frame to write
+    :param detection_object: Parking or Lane Violation object
+    """
     # writes tkinter readable image into our canvas
     if frame is not None:
         # drawing canvas for placing video
@@ -54,6 +76,10 @@ def writeNewFrame(frame, detection_object):
 
 # PARKING VIOLATION FUNCTIONS #
 def isDesiredObject(objects):
+    """
+    :param objects: object to check
+    :return: True only if the object passed is in our desired list
+    """
     # filter only Truck, Bus, Motorbike and Car for YOLOv3 in Parking module.
 
     # Parking violation module is only able to work with one vehicle.

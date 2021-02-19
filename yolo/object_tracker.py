@@ -1,31 +1,31 @@
+# System Modules ##
+import time
 import os
 
-# comment out below line to enable tensorflow logging outputs
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-import time
+# Third Party Modules ##
 import tensorflow as tf
-
-physical_devices = tf.config.experimental.list_physical_devices('GPU')
-if len(physical_devices) > 0:
-    tf.config.experimental.set_memory_growth(physical_devices[0], True)
-from absl import app, flags, logging
-from absl.flags import FLAGS
-import yolo.core.utils as utils
-from yolo.core.yolov4 import filter_boxes
 from tensorflow.python.saved_model import tag_constants
-from yolo.core.config import cfg
-from PIL import Image
-import cv2
-import numpy as np
-import matplotlib.pyplot as plt
 from tensorflow.compat.v1 import ConfigProto
 from tensorflow.compat.v1 import InteractiveSession
+import matplotlib.pyplot as plt
+
+# Local Modules
+import yolo.core.utils as utils
+from yolo.core.yolov4 import filter_boxes
+from yolo.core.config import cfg
 # deep sort imports
 from yolo.deep_sort import preprocessing, nn_matching
 from yolo.deep_sort.detection import Detection
 from yolo.deep_sort.tracker import Tracker
 from yolo.tools import generate_detections as gdet
 from misc.settings import *
+
+# comment out below line to enable tensorflow logging outputs
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+physical_devices = tf.config.experimental.list_physical_devices('GPU')
+if len(physical_devices) > 0:
+    tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
 
 class DetectorTracker:
@@ -57,7 +57,7 @@ class DetectorTracker:
         self.config = ConfigProto()
         self.config.gpu_options.allow_growth = True
         self.session = InteractiveSession(config=self.config)
-        STRIDES, ANCHORS, NUM_CLASS, XYSCALE = utils.load_config(self.flags)
+        _, ANCHORS, NUM_CLASS, XYSCALE = utils.load_config(self.flags)
         self.input_size = self.flags['size']
 
         # load tflite model if flag is set
@@ -124,12 +124,14 @@ class DetectorTracker:
                 self.pred = [self.interpreter.get_tensor(self.output_details[i]['index']) for i in range(len(
                     self.output_details))]
                 # run detections using yolov3 if flag is set
-                if self.flags['model'] == 'yolov3' and self.flags['tiny'] == True:
+                if self.flags['model'] == 'yolov3' and self.flags['tiny']:
                     self.boxes, self.pred_conf = filter_boxes(self.pred[1], self.pred[0], score_threshold=0.25,
-                                                              input_shape=tf.constant([self.input_size, self.input_size]))
+                                                              input_shape=tf.constant(
+                                                                  [self.input_size, self.input_size]))
                 else:
                     self.boxes, self.pred_conf = filter_boxes(self.pred[0], self.pred[1], score_threshold=0.25,
-                                                              input_shape=tf.constant([self.input_size, self.input_size]))
+                                                              input_shape=tf.constant(
+                                                                  [self.input_size, self.input_size]))
 
             else:
                 self.batch_data = tf.constant(self.image_data)
@@ -168,7 +170,7 @@ class DetectorTracker:
             self.class_names = utils.read_class_names(cfg.YOLO.CLASSES)
 
             # by default allow all classes in .names file
-            #self.allowed_classes = list(self.class_names.values())
+            # self.allowed_classes = list(self.class_names.values())
 
             # custom allowed classes (uncomment line below to customize tracker for only people)
             self.allowed_classes = ['car', 'truck', 'motorbike', 'bus']
@@ -192,7 +194,7 @@ class DetectorTracker:
             # encode yolo detections and feed to tracker
             self.features = self.encoder(self.detection_object.masked_frame, self.bboxes)
             self.detections = [Detection(bbox, score, class_name, feature) for bbox, score, class_name, feature in
-                          zip(self.bboxes, self.scores, names, self.features)]
+                               zip(self.bboxes, self.scores, names, self.features)]
 
             # initialize color map
             self.cmap = plt.get_cmap('tab20b')
@@ -220,10 +222,12 @@ class DetectorTracker:
             # draw bbox on screen
             color = self.colors[int(track.track_id) % len(self.colors)]
             color = [i * 255 for i in color]
-            cv2.rectangle(self.detection_object.masked_frame, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), color, 2)
+            cv2.rectangle(self.detection_object.masked_frame, (int(bbox[0]), int(bbox[1])),
+                          (int(bbox[2]), int(bbox[3])), color, 2)
             cv2.rectangle(self.detection_object.masked_frame, (int(bbox[0]), int(bbox[1] - 30)),
                           (int(bbox[0]) + (len(class_name) + len(str(track.track_id))) * 17, int(bbox[1])), color, -1)
-            cv2.putText(self.detection_object.masked_frame, class_name + "-" + str(track.track_id), (int(bbox[0]), int(bbox[1] - 10)), 0, 0.75,
+            cv2.putText(self.detection_object.masked_frame, class_name + "-" + str(track.track_id),
+                        (int(bbox[0]), int(bbox[1] - 10)), 0, 0.75,
                         (255, 255, 255), 2)
 
         # calculate frames per second of running detections

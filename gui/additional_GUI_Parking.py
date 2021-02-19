@@ -1,6 +1,3 @@
-# Third Party Modules ##
-from tkinter import *
-
 # Local Modules ##
 from functionality.functions import *
 
@@ -11,7 +8,9 @@ class AdditionalGUIParking:
         self.roiCoordsFrame()
 
     def roiCoordsFrame(self):
-        # Region of Interest Co-ordinates Frame
+        """
+        frame with textbox for entry of region of interest co-ordinates.
+        """
         self.object.roi_coords_frame = LabelFrame(self.object.window, text=roi_coords_title,
                                                   width=roi_coords_width)
         self.object.roi_coords_frame.grid(row=2, column=1, ipadx=roi_coords_inner_padding_x,
@@ -54,7 +53,6 @@ class AdditionalGUIParking:
         self.object.roi_coords_btn.grid(row=4, column=0, padx=roi_coords_btn_padding_x)
 
     def showResetButton(self):
-        # Reset button that appears after violation detection
         self.object.reset_violation_btn = Button(self.object.window, text=reset_violation_btn_title,
                                                  bg=reset_violation_btn_color,
                                                  activebackground=reset_violation_btn_active_color,

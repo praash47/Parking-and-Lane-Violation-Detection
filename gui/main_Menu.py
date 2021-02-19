@@ -8,7 +8,7 @@ class MainMenu:
         self.window = Tk()
         self.window.title("Main Menu - " + app_title)
         self.choice = None  # Main Menu Option Choice
-        self.exit = False
+        self.exit = False  # If user wants to exit, set this to true
 
         generateTopBottomBar(window=self.window, title=app_title)  # from functions.py
 
@@ -32,7 +32,6 @@ class MainMenu:
                               command=self.exitProgram)
         self.option3.grid(row=3, column=0, ipadx=option_inner_padding_x, ipady=option_inner_padding_y,
                           pady=option_outer_padding_y)
-
 
         self.window.mainloop()
         self.switchLoadWindow()  # this part executes after window has been destroyed.
