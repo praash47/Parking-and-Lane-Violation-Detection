@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>vehicles module &#8212; Parking, Lane and Retrogress Violation Detection 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-vehicles">
+<span id="vehicles-module"></span><h1>vehicles module<a class="headerlink" href="#module-vehicles" title="Permalink to this headline">¶</a></h1>
+<p>Responsible for keeping track of vehicles in scene and individual vehicles.</p>
+<dl class="py class">
+<dt id="vehicles.Vehicle">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">vehicles.</span></code><code class="sig-name descname"><span class="pre">Vehicle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bbox</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#vehicles.Vehicle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A vehicle object that stores information about vehicles</p>
+<dl class="py method">
+<dt id="vehicles.Vehicle.prev20Bboxand10AreaAppend">
+<code class="sig-name descname"><span class="pre">prev20Bboxand10AreaAppend</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bbox</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#vehicles.Vehicle.prev20Bboxand10AreaAppend" title="Permalink to this definition">¶</a></dt>
+<dd><p>record of previous 20 bounding boxes of that vehicle and previous 10 areas of vehicles that is required for
+other modules.
+:param bbox: bbox to calculate area from and append.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="vehicles.Vehicles">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">vehicles.</span></code><code class="sig-name descname"><span class="pre">Vehicles</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detection_object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#vehicles.Vehicles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Vehicles class is responsible for overall vehicles seen in the scene.</p>
+<dl class="py method">
+<dt id="vehicles.Vehicles.getVehicleById">
+<code class="sig-name descname"><span class="pre">getVehicleById</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#vehicles.Vehicles.getVehicleById" title="Permalink to this definition">¶</a></dt>
+<dd><p>To return vehicle object using id
+:param id: vehicle object to get id of
+:return: vehicle object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vehicles.Vehicles.register">
+<code class="sig-name descname"><span class="pre">register</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vehicles.Vehicles.register" title="Permalink to this definition">¶</a></dt>
+<dd><p>creating a vehicle object if it is not present in vehicles in scene
+- bounding box is updated if it is already present.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Parking, Lane and Retrogress Violation Detection</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Aashish, Asim, Niroj & Sudip.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/rst/vehicles.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

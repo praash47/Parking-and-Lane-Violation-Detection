@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>lane_Violation_Logic module &#8212; Parking, Lane and Retrogress Violation Detection 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-lane_Violation_Logic">
+<span id="lane-violation-logic-module"></span><h1>lane_Violation_Logic module<a class="headerlink" href="#module-lane_Violation_Logic" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="lane_Violation_Logic.checkCrossedLaneLineToOtherSide">
+<code class="sig-prename descclassname"><span class="pre">lane_Violation_Logic.</span></code><code class="sig-name descname"><span class="pre">checkCrossedLaneLineToOtherSide</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">much_area_on</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lane_Violation_Logic.checkCrossedLaneLineToOtherSide" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>True if vehicle has retrogressed being near to the lane lines.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="lane_Violation_Logic.checkRetrogress">
+<code class="sig-prename descclassname"><span class="pre">lane_Violation_Logic.</span></code><code class="sig-name descname"><span class="pre">checkRetrogress</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">where_is_vehicle</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lane_Violation_Logic.checkRetrogress" title="Permalink to this definition">¶</a></dt>
+<dd><p>this function checks retrogress with the help of average areas of first 5 and previous 5 frames. A retrogressing
+object ought to show opposite characteristics of area increase or decrease according to the lane it is in.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> – Lane Violation Object</p></li>
+<li><p><strong>vehicle</strong> – Vehicle Object</p></li>
+<li><p><strong>where_is_vehicle</strong> – the current location of the vehicle</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True on retrogress, False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="lane_Violation_Logic.checkToporBottomNear">
+<code class="sig-prename descclassname"><span class="pre">lane_Violation_Logic.</span></code><code class="sig-name descname"><span class="pre">checkToporBottomNear</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lane_Violation_Logic.checkToporBottomNear" title="Permalink to this definition">¶</a></dt>
+<dd><p>check whether top part is near to the vehicle relative to its current location, or the bottom part.
+:param lane: the current active lane for vehicle
+:param vehicle: vehicle object
+:return: Top or Bottom string based on it’s location.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="lane_Violation_Logic.checkVehicleLocation">
+<code class="sig-prename descclassname"><span class="pre">lane_Violation_Logic.</span></code><code class="sig-name descname"><span class="pre">checkVehicleLocation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lane_areas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lane_Violation_Logic.checkVehicleLocation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the location of vehicle by checking the bounding box and comparing with the lane areas.
+:param lane_areas: separated lane areas
+:param vehicle: vehicle object to check of
+:return: string of its location</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="lane_Violation_Logic.extendLaneLineUptoVehicle">
+<code class="sig-prename descclassname"><span class="pre">lane_Violation_Logic.</span></code><code class="sig-name descname"><span class="pre">extendLaneLineUptoVehicle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extend_from</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upto</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">up</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lane_Violation_Logic.extendLaneLineUptoVehicle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extends Lane Line Upto Vehicle to detect if the current bounding box of the vehicle intersects the lane line or not.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> – detection object (Lane Violation Object)</p></li>
+<li><p><strong>lane</strong> – which lane line to extend lane line upto vehicle on</p></li>
+<li><p><strong>extend_from</strong> – from which part to extend lane line is passed from here</p></li>
+<li><p><strong>upto</strong> – upto which part to extend lane line upto is mentioned here.</p></li>
+<li><p><strong>up</strong> – Is the line to be extended upwards or downwards.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>tuple of the location of lane line with respect to vehicle’s y otherwise None, None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="lane_Violation_Logic.muchAreaOn">
+<code class="sig-prename descclassname"><span class="pre">lane_Violation_Logic.</span></code><code class="sig-name descname"><span class="pre">muchAreaOn</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lane_Violation_Logic.muchAreaOn" title="Permalink to this definition">¶</a></dt>
+<dd><p>checks in which lane area, most of the area portion of the vehicle lies on.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> – Lane Violation Object</p></li>
+<li><p><strong>vehicle</strong> – Vehicle Object</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Parking, Lane and Retrogress Violation Detection</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Aashish, Asim, Niroj & Sudip.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/rst/lane_Violation_Logic.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
