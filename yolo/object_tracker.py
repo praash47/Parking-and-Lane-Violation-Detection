@@ -1,31 +1,26 @@
-# System Modules ##
-import time
 import os
 
-# Third Party Modules ##
+# comment out below line to enable tensorflow logging outputs
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+import time
 import tensorflow as tf
-from tensorflow.python.saved_model import tag_constants
-from tensorflow.compat.v1 import ConfigProto
-from tensorflow.compat.v1 import InteractiveSession
-import matplotlib.pyplot as plt
 
-# Local Modules
+physical_devices = tf.config.experimental.list_physical_devices('GPU')
+if len(physical_devices) > 0:
+    tf.config.experimental.set_memory_growth(physical_devices[0], True)
 import yolo.core.utils as utils
 from yolo.core.yolov4 import filter_boxes
+from tensorflow.python.saved_model import tag_constants
 from yolo.core.config import cfg
+import matplotlib.pyplot as plt
+from tensorflow.compat.v1 import ConfigProto
+from tensorflow.compat.v1 import InteractiveSession
 # deep sort imports
 from yolo.deep_sort import preprocessing, nn_matching
 from yolo.deep_sort.detection import Detection
 from yolo.deep_sort.tracker import Tracker
 from yolo.tools import generate_detections as gdet
 from misc.settings import *
-
-# comment out below line to enable tensorflow logging outputs
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
-physical_devices = tf.config.experimental.list_physical_devices('GPU')
-if len(physical_devices) > 0:
-    tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
 
 class DetectorTracker:
@@ -57,7 +52,7 @@ class DetectorTracker:
         self.config = ConfigProto()
         self.config.gpu_options.allow_growth = True
         self.session = InteractiveSession(config=self.config)
-        _, ANCHORS, NUM_CLASS, XYSCALE = utils.load_config(self.flags)
+        STRIDES, ANCHORS, NUM_CLASS, XYSCALE = utils.load_config(self.flags)
         self.input_size = self.flags['size']
 
         # load tflite model if flag is set
@@ -124,7 +119,7 @@ class DetectorTracker:
                 self.pred = [self.interpreter.get_tensor(self.output_details[i]['index']) for i in range(len(
                     self.output_details))]
                 # run detections using yolov3 if flag is set
-                if self.flags['model'] == 'yolov3' and self.flags['tiny']:
+                if self.flags['model'] == 'yolov3' and self.flags['tiny'] == True:
                     self.boxes, self.pred_conf = filter_boxes(self.pred[1], self.pred[0], score_threshold=0.25,
                                                               input_shape=tf.constant(
                                                                   [self.input_size, self.input_size]))

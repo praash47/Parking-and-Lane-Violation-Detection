@@ -1,4 +1,3 @@
-# Third Party Modules ##
 from tkinter import messagebox
 
 # Local Modules ##

@@ -20,6 +20,8 @@ def checkVehicleLocation(lane_areas, vehicle):
                                             lane_areas.lanes.left_lane_area['top_right'][0] + 2) \
             and int(vehicle.curr_bbox[2]) in range(lane_areas.lanes.left_lane_area['bottom_left'][0],
                                                    lane_areas.lanes.left_lane_area['bottom_right'][0] + 2):
+        print(vehicle.curr_bbox[0], lane_areas.lanes.left_lane_area['top_left'][0],lane_areas.lanes.left_lane_area['top_right'][0] + 2)
+        print(vehicle.curr_bbox[2], lane_areas.lanes.left_lane_area['bottom_left'][0], lane_areas.lanes.left_lane_area['bottom_right'][0] + 2)
         return "Left Lane"
 
     # If vehicles near to lane
@@ -101,29 +103,34 @@ def checkRetrogress(obj, vehicle, where_is_vehicle):
     :param where_is_vehicle: the current location of the vehicle
     :return: True on retrogress, False otherwise.
     """
-    avg_first_5_areas = sum(vehicle.prev_10_areas[:5]) / 5
-    avg_prev_5_areas = sum(vehicle.prev_10_areas[-5:]) / 5
-    if where_is_vehicle == "Left Lane":
-        # In left lane, the bounding box area of the vehicle shouldn't increase
-        if avg_first_5_areas > avg_prev_5_areas:
-            return True
-
-    elif where_is_vehicle == "Right Lane":
-        # In right lane, the bounding box area of the vehicle shouldn't decrease
-        if avg_first_5_areas < avg_prev_5_areas:
-            return True
-
-    elif where_is_vehicle == "Within Lane":
-        # If within lane periphery, that is just few distance away from the lane lines, then check much area on which
-        # lane
-        if muchAreaOn(obj, vehicle) == "Right":
-            # If much area is on right, we check if the vehicle has accomplished by retrogressing.
-            if checkCrossedLaneLineToOtherSide(obj, obj.lanes.right_lane_line1, vehicle, "Right"):
+    if vehicle.in_frame > 10:
+        print(vehicle.id)
+        old_area = sum(vehicle.prev_10_areas[:5]) / 5
+        new_area = sum(vehicle.prev_10_areas[-5:]) / 5
+        print(vehicle.id, where_is_vehicle)
+        if where_is_vehicle == "Left Lane":
+            # In left lane, the bounding box area of the vehicle shouldn't increase
+            if new_area > old_area:
+                print("Left lane retrogress")
                 return True
-        elif muchAreaOn(obj, vehicle) == "Left":
-            # If much area is on left, we check if the vehicle has accomplished by retrogressing.
-            if checkCrossedLaneLineToOtherSide(obj, obj.lanes.left_lane_line2, vehicle, "Left"):
+
+        elif where_is_vehicle == "Right Lane":
+            # In right lane, the bounding box area of the vehicle shouldn't decrease
+            if new_area < old_area:
+                print("Right Lane retrogress")
                 return True
+
+        # elif where_is_vehicle == "Within Lane":
+        #     # If within lane periphery, that is just few distance away from the lane lines, then check much area on which
+        #     # lane
+        #     if muchAreaOn(obj, vehicle) == "Right":
+        #         # If much area is on right, we check if the vehicle has accomplished by retrogressing.
+        #         if checkCrossedLaneLineToOtherSide(obj, obj.lanes.right_lane_line1, vehicle, "Right"):
+        #             return True
+        #     elif muchAreaOn(obj, vehicle) == "Left":
+        #         # If much area is on left, we check if the vehicle has accomplished by retrogressing.
+        #         if checkCrossedLaneLineToOtherSide(obj, obj.lanes.left_lane_line2, vehicle, "Left"):
+        #             return True
 
     return False
 

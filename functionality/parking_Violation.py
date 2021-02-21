@@ -5,10 +5,8 @@ from functionality.parking.parking_Violation_Logic import *
 from functionality.parking.yolo import *
 from functionality.roi import *
 from functionality.video import *
-# GUI #
 from gui.additional_GUI_Parking import *
 from gui.confirm_Detect import *
-# Misc #
 from misc.settings import *
 from misc.variables import *
 
@@ -149,16 +147,13 @@ class ParkingViolation:
         if len(self.violation_log) > 0 and not self.reset_violation_btn:
             self.additional_gui.showResetButton()
 
-        try:
+        if self.frame is not None:
             # Resize frame
             width = int(self.frame.shape[1] * video_scale_percent / 100)
             height = int(self.frame.shape[0] * video_scale_percent / 100)
             dim = (width, height)
             self.frame = cv2.resize(self.frame, dim, interpolation=cv2.INTER_AREA)
             self.video_canvas.configure(width=width, height=height)
-
-        except:
-            messagebox.showerror("Ended or Failed", "Your video ended or failed!")
 
         # Finally write the processed frame.
         writeNewFrame(frame=self.frame, detection_object=self)

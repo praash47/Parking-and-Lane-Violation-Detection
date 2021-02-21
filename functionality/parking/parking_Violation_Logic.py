@@ -11,6 +11,7 @@ from misc.settings import *
 from misc.variables import *
 
 global prev_coordinates, rest_start_time
+rest_start_time = None
 
 
 def moving(prevbbox):
@@ -38,6 +39,7 @@ def checkViolation(detection_object):
     """
     global prev_coordinates, rest_start_time
 
+    prev_coordinates = []
     # first of all our prev_coordinate is list.
     if type(prev_coordinates) is list:
         prev_coordinates.append([detection_object.detector_tracker.tracked_x1,
