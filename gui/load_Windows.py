@@ -14,6 +14,7 @@ class SubWindow:  # Window for Parking and Lane Violation LOAD WINDOW
 
         self.option = option
         self.video_path = ''
+        self.quit = False
 
         # these functions are present in functionality/functions.py #
         generateTopBottomBar(window=self.window, title=self.window.title())
@@ -55,7 +56,9 @@ class SubWindow:  # Window for Parking and Lane Violation LOAD WINDOW
         else:
             self.window.destroy()
             self.window.quit()
-            LaneViolation(self.video_path)
+            if not LaneViolation(self.video_path).lane_line_received:
+                self.quit = True
+
 
 
 class ParkingViolationLoadWindow(SubWindow):

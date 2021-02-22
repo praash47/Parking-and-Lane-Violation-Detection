@@ -110,32 +110,42 @@ class Lanes:
         This function separate lane lines into self.left_lane_line1, left_lane_line2, right_lane_line1 &
         right_lane_line2
         """
-        if len(self.lanes_list) >= 4:
-            # If number of lines only greater than or equal to 4, then proceed.
-            if len(self.lanes_list) > 4:
-                # If greater than four, then pop.
-                for index, lane in enumerate(self.lanes_list):
-                    if lane[0] == lane[2]:
-                        self.lanes_list.pop(index)
-            # Keep the lanes in order
-            lanes_order = [self.lanes_list[0][0], self.lanes_list[1][0], self.lanes_list[2][0], self.lanes_list[3][0]]
-            # Sort in ascending order
-            lanes_order.sort()
-            # Assign to each lane_line variable.
-            self.left_lane_line1 = self.getLaneLine(lanes_order.pop(0))
-            self.left_lane_line2 = self.getLaneLine(lanes_order.pop(0))
-            self.right_lane_line1 = self.getLaneLine(lanes_order.pop(0))
-            self.right_lane_line2 = self.getLaneLine(lanes_order.pop(0))
-            # Create dictionary format for lanes (easy readability)
-            self.formatLaneLinesProperly()
-            # Extend Lane Lines to the top of the frame and bottom of the frame
-            self.extendLaneLines()
-            return True
+        road_roi_length = int(abs(self.object.road_roi_left[0] - self.object.road_roi_right[0]))
+        roi_length = self.hough_crop_range_right + self.hough_crop_range_left
+
+        roi_min_percent_threshold = 0.10 * road_roi_length
+        roi_max_percent_threshold = 0.35 * road_roi_length
+
+        if roi_min_percent_threshold < roi_length < roi_max_percent_threshold:
+            if len(self.lanes_list) >= 4:
+                # If number of lines only greater than or equal to 4, then proceed.
+                if len(self.lanes_list) > 4:
+                    # If greater than four, then pop.
+                    for index, lane in enumerate(self.lanes_list):
+                        if lane[0] == lane[2]:
+                            self.lanes_list.pop(index)
+                # Keep the lanes in order
+                lanes_order = [self.lanes_list[0][0], self.lanes_list[1][0], self.lanes_list[2][0], self.lanes_list[3][0]]
+                # Sort in ascending order
+                lanes_order.sort()
+                # Assign to each lane_line variable.
+                self.left_lane_line1 = self.getLaneLine(lanes_order.pop(0))
+                self.left_lane_line2 = self.getLaneLine(lanes_order.pop(0))
+                self.right_lane_line1 = self.getLaneLine(lanes_order.pop(0))
+                self.right_lane_line2 = self.getLaneLine(lanes_order.pop(0))
+                # Create dictionary format for lanes (easy readability)
+                self.formatLaneLinesProperly()
+                # Extend Lane Lines to the top of the frame and bottom of the frame
+                self.extendLaneLines()
+            else:
+                # Case of Not Enough Lines by Hough
+                messagebox.showwarning(title="Not enough lines by hough",
+                                       message="There is not enough lines by hough."
+                                               "Selecting lane roi properly may work")
         else:
             # Case of Not Enough Lines by Hough
-            messagebox.showwarning(title="Not Enough Lines By Hough",
-                                   message="There is not enough lines by hough. Selecting ROI properly may work.")
-            return False
+            messagebox.showwarning(title="Crop range too high or low",
+                                   message="The crop range is too high or low. Selecting lane roi properly may work")
 
     def getLaneLine(self, x):
         """

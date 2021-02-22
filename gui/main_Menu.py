@@ -46,7 +46,9 @@ class MainMenu:
             if self.choice == 0:
                 ParkingViolationLoadWindow()  # Proceed to functionality/parking_Violation.py
             else:
-                LaneViolationLoadWindow()  # Proceed to functionality/lane_Violation.py
+                exit_program = LaneViolationLoadWindow()  # Proceed to functionality/lane_Violation.py
+                if exit_program:
+                    self.exitProgram()
 
     def exitProgram(self):
         self.window.destroy()
