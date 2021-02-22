@@ -130,13 +130,12 @@ class Lanes:
             self.formatLaneLinesProperly()
             # Extend Lane Lines to the top of the frame and bottom of the frame
             self.extendLaneLines()
+            return True
         else:
             # Case of Not Enough Lines by Hough
             messagebox.showwarning(title="Not Enough Lines By Hough",
                                    message="There is not enough lines by hough. Selecting ROI properly may work.")
-            self.object.roiSpecification()
-            self.houghTransform()
-            self.separateLaneLines()
+            return False
 
     def getLaneLine(self, x):
         """

@@ -90,7 +90,23 @@ class Vehicle:
             # If more than 20, delete the first record.
             if self.prev_20_bounding_box.shape[0] > 20:
                 self.prev_20_bounding_box = np.delete(self.prev_20_bounding_box, 0, 0)
-        self.prev_10_areas.append(area)
+
+        if len(self.prev_10_areas) <= 4:
+            self.prev_10_areas.append(area)
+        else:
+            temp_numpy_array = np.array(self.prev_10_areas)
+            length = len(self.prev_10_areas)
+            q1 = np.median(temp_numpy_array[:int(length/2)])
+            q3 = np.median(temp_numpy_array[int(length/2):])
+            qd = 0.5 * (q3 - q1)
+            if area > q3:
+                upper_outlier_threshold = q3 + 3 * qd
+                if area < upper_outlier_threshold:
+                    self.prev_10_areas.append(area)
+            elif area < q1:
+                lower_outlier_threshold = q1 - 3 * qd
+                if area > lower_outlier_threshold:
+                    self.prev_10_areas.append(area)
         # If more than 10 areas, then remove the first one area.
         if len(self.prev_10_areas) > 10:
             self.prev_10_areas.pop(0)

@@ -53,7 +53,7 @@ class DetectorTracker:
             threshold_received, threshold_frame = cv2.threshold(blurred_difference, detector_threshold_output_size,
                                                                 detector_threshold_thresh, cv2.THRESH_BINARY)
             dilated_frame = cv2.dilate(threshold_frame, None, iterations=detector_dilate_iterations)
-            contours, hierarchy = cv2.findContours(dilated_frame, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            contours, hierarchy, _ = cv2.findContours(dilated_frame, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
             moving_object_count = 0
             # contours are the list of moving objects in frame.

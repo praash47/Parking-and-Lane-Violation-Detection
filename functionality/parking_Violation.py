@@ -147,16 +147,18 @@ class ParkingViolation:
         if len(self.violation_log) > 0 and not self.reset_violation_btn:
             self.additional_gui.showResetButton()
 
+        resized_frame = None
         if self.frame is not None:
             # Resize frame
             width = int(self.frame.shape[1] * video_scale_percent / 100)
             height = int(self.frame.shape[0] * video_scale_percent / 100)
             dim = (width, height)
-            self.frame = cv2.resize(self.frame, dim, interpolation=cv2.INTER_AREA)
+            resized_frame = cv2.resize(self.frame, dim, interpolation=cv2.INTER_AREA)
             self.video_canvas.configure(width=width, height=height)
 
         # Finally write the processed frame.
-        writeNewFrame(frame=self.frame, detection_object=self)
+        if resized_frame is not None:
+            writeNewFrame(frame=resized_frame, detection_object=self)
 
         # After parking_window_update_time, call the detectAndTrack again.
         self.window.after(parking_window_update_time, self.detectAndTrack)
@@ -180,7 +182,7 @@ class ParkingViolation:
             # if video is paused
             if self.pause_video:
                 self.pause_frame = self.video.cap.get(cv2.CAP_PROP_POS_FRAMES) - 1  # capture the paused frame
-                cv2.waitKey(-1)  # cv2 pause function
+                cv2.waitKey(1)  # cv2 pause function
                 return None, None
 
             # frame is properly received and video is not paused

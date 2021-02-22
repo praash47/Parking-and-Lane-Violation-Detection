@@ -47,6 +47,7 @@ class LaneViolation:
         self.masked_frame = None
         self.tracker = obtk.DetectorTracker(self)
         self.lanes = Lanes(self)
+        self.lane_line_received = None
 
         # ROI coordinates #
         self.roi = RegionOfInterest(self)
@@ -93,15 +94,16 @@ class LaneViolation:
         self.detect_ask_window.destroy()
         self.detect_ask_window.quit()
 
-        # First, we specify three region of interests
-        self.roiSpecification()
+        while not self.lane_line_received:
+            # First, we specify three region of interests
+            self.roiSpecification()
 
-        # we apply hough transform and then:
-        # 1. separate lane lines (placing top and bottom co-ordinate values of four lane lines)
-        # 2. separate lane areas (placing the top left, right and bottom left & right for two lane areas)
-        self.lanes.houghTransform()
-        self.lanes.separateLaneLines()
-        self.lanes.separateLaneAreas()
+            # we apply hough transform and then:
+            # 1. separate lane lines (placing top and bottom co-ordinate values of four lane lines)
+            # 2. separate lane areas (placing the top left, right and bottom left & right for two lane areas)
+            self.lanes.houghTransform()
+            self.lane_line_received = self.lanes.separateLaneLines()
+            self.lanes.separateLaneAreas()
 
         # our main detection window
         self.window = Tk()
