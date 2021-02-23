@@ -45,7 +45,7 @@ class LaneViolation:
 
         # Lanes and Tracker initialization #
         self.masked_frame = None
-        # self.tracker = obtk.DetectorTracker(self)
+        self.tracker = obtk.DetectorTracker(self)
         self.lanes = Lanes(self)
 
         # ROI coordinates #

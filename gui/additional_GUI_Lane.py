@@ -200,14 +200,12 @@ class AdditionalGUILane:
         os.startfile(path)
 
     def extractLocation(self, id=None, video=False):
-        print(id)
         violation_log_len = len(self.object.violation_log)
 
         for i in range(violation_log_len):
             batch_len = len(self.object.violation_log[i]['ids'])
 
             for j in range(batch_len):
-                print(i, j)
                 if self.object.violation_log[i]['ids'][j] == id:
                     if not video:
                         return self.object.violation_log[i]['pictures'][j]
