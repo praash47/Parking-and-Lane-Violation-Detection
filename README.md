@@ -1,5 +1,16 @@
 # Parking and Lane Violation Detection
- Parking and Lane Violation Detection using Object Detector and Tracker
+ Parking and Lane Violation Detection using Object Detector and Tracker.
+ 
+ **Note:** This README needs to be uploaded.
+ 
+ Made by:
+ 1. Aashish Tamrakar (074bct101@nce.edu.np)
+ 2. Asim Aryal (074bct104@nce.edu.np)
+ 3. Niroj Bajracharya (074bct123@nce.edu.np)
+ 4. Sudip Gyawali (074bct142@nce.edu.np)
+
+ Under the supervision of:
+ Anup Shrestha (anup@nce.edu.np)
 
 ## Setup Step by Step
 ### Yolo and Tracker
