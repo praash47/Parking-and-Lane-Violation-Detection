@@ -1,7 +1,9 @@
 # Parking and Lane Violation Detection
  Parking and Lane Violation Detection using Object Detector and Tracker.
  
- **Note:** This README needs to be uploaded.
+ **Documentation:** praash47.github.io/Parking-and-Lane-Violation-Detection
+ 
+ **Note:** This README needs to be updated.
  
  Made by:
  1. Aashish Tamrakar (074bct101@nce.edu.np)
